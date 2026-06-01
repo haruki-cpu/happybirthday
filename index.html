@@ -258,7 +258,7 @@ body {
 /* POLAROID */
 #photo-stage {
   display:none; flex-direction:column; align-items:center;
-  gap:14px; width:100%; max-width:320px;
+  gap:14px; width:100%; max-width:240px;
 }
 #photo-stage.show {
   display:flex;
@@ -273,9 +273,9 @@ body {
   box-shadow:0 3px 10px rgba(0,0,0,0.3),0 16px 48px rgba(0,0,0,0.45);
   position:relative;
 }
-.polaroid-card img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
+.polaroid-card img { width:100%; aspect-ratio:3/4; object-fit:cover; display:block; }
 .polaroid-demo {
-  width:100%; aspect-ratio:4/3;
+  width:100%; aspect-ratio:3/4;
   background:linear-gradient(135deg,#fce7f3,#fbcfe8,#f9a8d4);
   display:flex; align-items:center; justify-content:center;
   flex-direction:column; gap:10px;
@@ -401,8 +401,8 @@ body {
   to{transform:scale(1) translateY(0);opacity:1;}
 }
 .lb-polaroid{background:#fff;padding:16px 16px 72px;box-shadow:0 24px 80px rgba(0,0,0,0.7);width:100%;position:relative;}
-.lb-polaroid img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;}
-.lb-demo{width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,#fce7f3,#fbcfe8,#f9a8d4);display:flex;align-items:center;justify-content:center;font-size:64px;}
+.lb-polaroid img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;}
+.lb-demo{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,#fce7f3,#fbcfe8,#f9a8d4);display:flex;align-items:center;justify-content:center;font-size:64px;}
 .lb-bottom{
   position:absolute;bottom:0;left:0;right:0;height:72px;
   display:flex;align-items:center;justify-content:center;
@@ -643,9 +643,6 @@ footer {
       </svg>
     </div>
 
-    <button id="gacha-btn">🎀 ガチャをひく 🎀</button>
-    <div id="status-msg"></div>
-
     <div id="photo-stage">
       <div class="polaroid-card">
         <img id="photo-img" src="" alt="思い出の写真" style="display:none">
@@ -660,6 +657,9 @@ footer {
       <div class="photo-meta" id="photo-meta"></div>
       <button id="share-line">💚 LINEでシェア</button>
     </div>
+
+    <button id="gacha-btn">🎀 ガチャをひく 🎀</button>
+    <div id="status-msg"></div>
   </div>
 
   <div class="section-divider"><span>🎀 思い出コレクション 🎀</span></div>
@@ -803,36 +803,36 @@ footer {
    一致する日付がない日は LOVE_MSG_DEFAULT が表示されます
 ============================================= */
 const LOVE_MESSAGES = [
-  { date: '6/1',  msg: '今日もお仕事お疲れ様 💕' },
-  { date: '6/2',  msg: '夏希の笑顔が世界一！！ ' },
-  { date: '6/3',  msg: 'え、待って、かわいすぎやろ！！！！' },
+  { date: '6/1',  msg: '今日もそばにいてくれてありがとう 💕' },
+  { date: '6/2',  msg: '笑顔が世界一好きだよ 🎀' },
+  { date: '6/3',  msg: 'いつも支えてくれてありがとう 💕' },
   { date: '6/4',  msg: '大好きだよ、夏希 💕' },
-  { date: '6/5',  msg: '今日から3日間会えないけどガチャは引いてね👀 ' },
-  { date: '6/6',  msg: '思い出したらLINEしてほしいな...😘' },
-  { date: '6/7',  msg: '明日からもお仕事がんばろうね🔥' },
-  { date: '6/8',  msg: '今日も世界一かわいい💝' },
+  { date: '6/5',  msg: '一緒にいられて幸せだよ 🌸' },
+  { date: '6/6',  msg: 'ずっと一緒にいたいな 💕' },
+  { date: '6/7',  msg: '毎日楽しいのは夏希のおかげだよ 🎀' },
+  { date: '6/8',  msg: '好きって伝えたくて 💕' },
   { date: '6/9',  msg: '今日も会いたいな 🌸' },
-  { date: '6/10', msg: '髪切ったの！どう？？ 💕' },
-  { date: '6/11', msg: '来週の夜は新幹線乗ったりバタバタやぞ！' },
-  { date: '6/12', msg: '出張お疲れ様！！明日は一緒に過ごそ😘' },
-  { date: '6/13', msg: 'もうすぐやぞ！！ワクワク🥰' },
-  { date: '6/14', msg: '明日から4日頑張ればディズニー！' },
-  { date: '6/15', msg: '準備できた？？もうすぐやぞ！✨' },
-  { date: '6/16', msg: '忘れ物ない？準備しときや！！ 💕' },
-  { date: '6/17', msg: '明日頑張ればディズニーや！ ' },
-  { date: '6/18', msg: 'お疲れ様！明日からいっぱい楽しむぞ！！💕' },
-  { date: '6/19', msg: '夏希のこと世界で一番愛してる！！！' },
-  { date: '6/20', msg: '半年記念日✨これからもよろしく！！！' },
-  { date: '6/21', msg: '明日から仕事嫌すぎる...😭' },
-  { date: '6/22', msg: '月曜日お疲れ様！頑張ったね！' },
+  { date: '6/10', msg: '夏希がいてくれてよかった 💕' },
+  { date: '6/11', msg: '毎日思ってるよ 🎀' },
+  { date: '6/12', msg: 'ありがとう、大好き 💕' },
+  { date: '6/13', msg: 'いつもかわいいね 🌸' },
+  { date: '6/14', msg: '笑顔が見たいな 💕' },
+  { date: '6/15', msg: 'そばにいてくれてありがとう 🎀' },
+  { date: '6/16', msg: '大好きだよ、これからもよろしくね 💕' },
+  { date: '6/17', msg: '一緒にいると楽しいな 🌸' },
+  { date: '6/18', msg: '毎日好きだよ 💕' },
+  { date: '6/19', msg: 'いつもありがとう 🎀' },
+  { date: '6/20', msg: 'あと10日！楽しみにしてるよ 🎂' },
+  { date: '6/21', msg: 'あと9日、わくわくしてる 💕' },
+  { date: '6/22', msg: 'あと8日！大好きだよ 🎀' },
   { date: '6/23', msg: 'あと1週間切ったよ！ドキドキ 💕' },
-  { date: '6/24', msg: 'あと6日！楽しみ！！🌸' },
-  { date: '6/25', msg: 'あと5日！もうすぐ10代も終わり！！ 💕' },
+  { date: '6/24', msg: 'あと6日！楽しみにしてるね 🌸' },
+  { date: '6/25', msg: 'あと5日！準備してるよ 💕' },
   { date: '6/26', msg: 'あと4日！もうすぐだね 🎀' },
   { date: '6/27', msg: 'あと3日！待ち遠しいな 💕' },
   { date: '6/28', msg: 'あと2日！楽しみにしてるよ 🎂' },
   { date: '6/29', msg: '明日はお誕生日！大好きだよ 💕' },
-  { date: '6/30', msg: '夏希お誕生日おめでとう！一緒に良い一年にしようね💕' },
+  { date: '6/30', msg: 'お誕生日おめでとう！大好き 🎂💕' },
   // ← ここにどんどん追加してね
 ];
 
@@ -1220,7 +1220,7 @@ function updatePullStatus() {
   }
 }
 function resetGachaUI(){
-  capsule.style.visibility = 'visible';
+  document.getElementById('gacha-machine').style.display = 'flex';
   capsule.className = '';
   document.getElementById('photo-stage').classList.remove('show');
   document.getElementById('share-line').classList.remove('show');
@@ -1233,7 +1233,7 @@ btn.addEventListener('click', () => {
   if (getPending() <= 0) { updatePullStatus(); return; }
   btn.disabled = true;
   statusEl.textContent = '';
-  capsule.style.visibility = 'visible';
+  document.getElementById('gacha-machine').style.display = 'flex';
 
   // Step 1: Shake (0–600ms)
   capsule.classList.add('shaking');
@@ -1263,16 +1263,12 @@ btn.addEventListener('click', () => {
           setLastIdx(idx);
           // 引いた回数を1減らす
           setPending(getPending() - 1);
-          capsule.style.visibility = 'hidden';
+          document.getElementById('gacha-machine').style.display = 'none';
           capsule.classList.remove('burst');
           showPhoto(idx, true);
           launchConfetti();
           renderCollection();
-          // まだ残りがあればボタン再有効化
           updatePullStatus();
-          if (getPending() > 0) {
-            capsule.style.visibility = 'visible';
-          }
         }, 450);
       }, 400);
     }, 700);
