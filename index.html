@@ -106,7 +106,7 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);mi
 .col-item.locked .lock-icon{font-size:18px;opacity:0.18;}
 .col-item.locked .lock-num{font-size:9px;color:var(--dim);opacity:0.5;letter-spacing:0.5px;}
 #present-section-wrap{width:100%;max-width:660px;margin-bottom:80px;display:none;}
-#present-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+#present-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
 .pres-item{background:linear-gradient(135deg,rgba(212,168,76,0.1),rgba(244,114,182,0.07));border:1px solid rgba(212,168,76,0.3);border-radius:12px;padding:20px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;}
 .pres-item:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(212,168,76,0.2);}
 .pres-item-icon{font-size:36px;}
@@ -164,9 +164,11 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);mi
 @keyframes iconBounce{from{transform:scale(0) rotate(-20deg);}to{transform:scale(1) rotate(0);}}
 #present-reveal-title{font-family:'Zen Kurenaido',cursive;font-size:clamp(20px,5vw,30px);color:var(--gold-l);text-shadow:0 0 30px rgba(212,168,76,0.8),0 0 60px rgba(212,168,76,0.4);letter-spacing:2px;line-height:1.5;}
 /* プレゼント画像（ポラロイド風） */
-#present-reveal-img-wrap{width:100%;max-width:260px;background:#fff;padding:10px 10px 48px;box-shadow:0 8px 40px rgba(0,0,0,0.6);position:relative;display:none;}
-#present-reveal-img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;}
-#present-reveal-img-heart{position:absolute;bottom:0;left:0;right:0;height:48px;display:flex;align-items:center;justify-content:center;font-size:20px;animation:heartbeat 1.4s ease-in-out infinite;}
+#present-reveal-img-wrap{width:100%;max-width:340px;border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.5);display:none;}
+#present-reveal-img{width:100%;display:block;max-height:52vh;object-fit:contain;}
+#present-reveal-dl-btn{display:none;align-items:center;gap:8px;background:rgba(212,168,76,0.15);border:1px solid rgba(212,168,76,0.4);border-radius:999px;color:var(--gold-l);padding:10px 28px;font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:2px;cursor:pointer;transition:background 0.2s,transform 0.15s;}
+#present-reveal-dl-btn.show{display:flex;}
+#present-reveal-dl-btn:hover{background:rgba(212,168,76,0.28);transform:translateY(-2px);}
 #present-reveal-msg-card{background:linear-gradient(135deg,rgba(212,168,76,0.12),rgba(244,114,182,0.08));border:1px solid rgba(212,168,76,0.35);border-radius:16px;padding:20px 24px;max-width:320px;width:100%;}
 #present-reveal-msg{font-family:'Noto Serif JP',serif;font-size:15px;color:var(--text);line-height:2.2;opacity:0.95;white-space:pre-line;}
 #present-reveal-close{background:linear-gradient(135deg,#e879a0,#f9a8d4,#e879a0);color:white;border:none;border-radius:999px;padding:15px 48px;font-family:'Zen Kurenaido',cursive;font-size:16px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 24px rgba(232,121,160,0.6);transition:transform 0.15s,box-shadow 0.15s;}
@@ -179,9 +181,11 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);mi
 .pres-lb-icon{font-size:48px;}
 .pres-lb-title{font-family:'Zen Kurenaido',cursive;font-size:20px;color:var(--gold-l);text-shadow:0 0 24px rgba(212,168,76,0.6);}
 .pres-lb-date{font-size:11px;color:var(--gold);letter-spacing:2px;opacity:0.8;}
-#pres-lb-img-wrap{width:100%;max-width:240px;background:#fff;padding:10px 10px 44px;box-shadow:0 8px 32px rgba(0,0,0,0.5);position:relative;display:none;}
-#pres-lb-img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;}
-#pres-lb-img-heart{position:absolute;bottom:0;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:center;font-size:18px;animation:heartbeat 1.4s ease-in-out infinite;}
+#pres-lb-img-wrap{width:100%;max-width:340px;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);display:none;}
+#pres-lb-img{width:100%;display:block;max-height:52vh;object-fit:contain;}
+#pres-lb-dl-btn{display:none;align-items:center;gap:8px;background:rgba(212,168,76,0.15);border:1px solid rgba(212,168,76,0.4);border-radius:999px;color:var(--gold-l);padding:10px 28px;font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:2px;cursor:pointer;transition:background 0.2s,transform 0.15s;}
+#pres-lb-dl-btn.show{display:flex;}
+#pres-lb-dl-btn:hover{background:rgba(212,168,76,0.28);transform:translateY(-2px);}
 .pres-lb-msg{font-family:'Noto Serif JP',serif;font-size:14px;color:var(--text);line-height:2.2;opacity:0.9;white-space:pre-line;text-align:center;}
 .pres-lb-close{background:none;border:1px solid rgba(244,114,182,0.35);border-radius:50%;width:38px;height:38px;color:var(--pink-l);font-size:18px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background 0.2s;margin-top:8px;}
 .pres-lb-close:hover{background:rgba(244,114,182,0.12);}
@@ -265,8 +269,8 @@ footer{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;c
       <div id="present-reveal-title"></div>
       <div id="present-reveal-img-wrap">
         <img id="present-reveal-img" src="" alt="">
-        <div id="present-reveal-img-heart">💕</div>
       </div>
+      <button id="present-reveal-dl-btn">📥 画像を保存</button>
       <div id="present-reveal-msg-card">
         <div id="present-reveal-msg"></div>
       </div>
@@ -281,7 +285,8 @@ footer{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;c
     <div class="pres-lb-icon">🎁</div>
     <div class="pres-lb-title" id="pres-lb-title"></div>
     <div class="pres-lb-date" id="pres-lb-date"></div>
-    <div id="pres-lb-img-wrap"><img id="pres-lb-img" src="" alt=""><div id="pres-lb-img-heart">💕</div></div>
+    <div id="pres-lb-img-wrap"><img id="pres-lb-img" src="" alt=""></div>
+    <button id="pres-lb-dl-btn">📥 画像を保存</button>
     <div class="pres-lb-msg" id="pres-lb-msg"></div>
     <button class="pres-lb-close" id="pres-lb-close">✕</button>
   </div>
@@ -453,7 +458,7 @@ const PRESENT_SCHEDULE = [
     date:    "2026-06-11",
     title:   "ハイキュー好きの夏希へのプレゼント🏐",
     message: "いきなり誕生日プレゼント✨土曜日発売らしいから引きにいくぞっ！！",
-    image:   "photos/ハイキューくじ引換券.jpg"
+    image:   "ハイキューくじ引換券.jpg"
   },
   {
     date:    "2026-06-20",
@@ -507,9 +512,50 @@ const setOpened=a=>localStorage.setItem(K_OPENED,JSON.stringify(a));
 function daysBetween(a,b){const d1=new Date(a),d2=new Date(b);d1.setHours(0,0,0,0);d2.setHours(0,0,0,0);return Math.round((d2-d1)/86400000);}
 function creditPulls(){const today=todayStr(),last=localStorage.getItem(K_LAST_CREDITED);if(!last){setPending(getPending()+1);localStorage.setItem(K_LAST_CREDITED,today);}else{const diff=daysBetween(last,today);if(diff>0){setPending(getPending()+diff);localStorage.setItem(K_LAST_CREDITED,today);}}}
 
-/* PHOTOS */
+/* PHOTOS
+   ─────────────────────────────────────────
+   写真を追加・削除するときはこの配列を編集してください。
+   { file: "ファイル名", note: "デフォルトコメント（省略可）" }
+   または文字列だけでもOK: "ファイル名"
+   ─────────────────────────────────────────
+*/
+const PHOTO_LIST = [
+  "1765901562592.jpg",
+  "1767216955658.jpg",
+  "1769695084506.jpg",
+  "1774179129600.jpg",
+  "1777989227181.jpg",
+  "1778936032100.jpg",
+  "3551659479.jpg",
+  "BeautyPlus_20251226000645754_save.jpg",
+  "BeautyPlus_20260131173101462_save.jpg",
+  "BeautyPlus_20260207151815100_0_save.jpg",
+  "BeautyPlus_20260214181010716_0_save.jpg",
+  "BeautyPlus_20260320125542692_0_save.jpg",
+  "BeautyPlus_20260320150255059_0_save.jpg",
+  "BeautyPlus_20260329125425893_0_save.jpg",
+  "BeautyPlus_20260405145128566_0_save.jpg",
+  "BeautyPlus_20260418161756023_0_save.jpg",
+  "BeautyPlus_20260425185912785_0_save.jpg",
+  "IMG_20251017_221706795.jpg",
+  "IMG_20251220_142237578.jpg",
+  "IMG_20251220_183333864.jpg",
+  "IMG_20251230_215325467.jpg",
+  "IMG_20260117_190001549.jpg",
+  "IMG_20260221_193236180.jpg",
+  "IMG_20260320_202642602.jpg",
+  "IMG_20260429_133924772.jpg",
+  "PAIRY_IMG_1767017712828.jpg",
+  "Pictlink_20260215_025550 (5).jpg",
+  "Pictlink_20260228_170639.jpg",
+  "Pictlink_20260418_161448.jpg",
+  "Screenshot_20251217-214308.png",
+];
+
 let photoList=[];
-async function loadPhotos(){try{const r=await fetch('photos.json?v='+Date.now());if(!r.ok)throw 0;const raw=await r.json();photoList=raw.map(item=>typeof item==='string'?{file:item,note:''}:item);}catch{photoList=Array(6).fill(null).map(()=>({file:'__demo__',note:''}));}}
+async function loadPhotos(){
+  photoList=PHOTO_LIST.map(item=>typeof item==='string'?{file:item,note:''}:item);
+}
 function getComment(idx){const local=getComments()[idx];return local!==undefined?local:photoList[idx]?.note||'';}
 function pickRandom(){if(!photoList.length)return null;const pulled=getPulled(),allIdx=photoList.map((_,i)=>i),unPulled=allIdx.filter(i=>!pulled.includes(i)),pool=unPulled.length?unPulled:allIdx;return pool[Math.floor(Math.random()*pool.length)];}
 
@@ -561,8 +607,16 @@ function renderPresentGrid(){
   if(!opened.length){wrap.style.display='none';return;}
   wrap.style.display='block';
   opened.forEach(p=>{
-    const el=document.createElement('div');el.className='pres-item';
-    el.innerHTML=`<div class="pres-item-icon">🎁</div><div class="pres-item-date">${p.date}</div><div class="pres-item-preview">${p.title||'プレゼント'}</div>`;
+    const el=document.createElement('div');el.className='col-item unlocked';
+    const imgWrap=document.createElement('div');imgWrap.className='col-img-wrap';
+    if(p.image){
+      const img=document.createElement('img');img.src=`photos/${p.image}`;img.alt=p.title||'プレゼント';imgWrap.appendChild(img);
+    }else{
+      const d=document.createElement('div');d.className='col-demo';d.textContent='🎁';imgWrap.appendChild(d);
+    }
+    const ov=document.createElement('div');ov.className='col-overlay';ov.innerHTML='<span class="col-overlay-text">💕 タップして見る</span>';imgWrap.appendChild(ov);
+    el.appendChild(imgWrap);
+    const ca=document.createElement('div');ca.className='col-comment-area has-comment';ca.textContent=p.title||'プレゼント';el.appendChild(ca);
     el.addEventListener('click',()=>openPresLightbox(p));
     grid.appendChild(el);
   });
@@ -572,10 +626,13 @@ function openPresLightbox(p){
   document.getElementById('pres-lb-date').textContent=p.date||'';
   document.getElementById('pres-lb-msg').textContent=p.message||'';
   const iw=document.getElementById('pres-lb-img-wrap'),ii=document.getElementById('pres-lb-img');
-  if(p.image){iw.style.display='block';ii.src=`photos/${p.image}`;}else{iw.style.display='none';}
+  const presLbDl=document.getElementById('pres-lb-dl-btn');
+  if(p.image){iw.style.display='block';ii.src=`photos/${p.image}`;presLbDl.classList.add('show');}else{iw.style.display='none';presLbDl.classList.remove('show');}
   document.getElementById('pres-lightbox').classList.add('open');document.body.style.overflow='hidden';
 }
 document.getElementById('pres-lb-close').addEventListener('click',()=>{document.getElementById('pres-lightbox').classList.remove('open');document.body.style.overflow='';});
+document.getElementById('pres-lb-dl-btn').addEventListener('click',()=>{const ii=document.getElementById('pres-lb-img');if(!ii.src)return;const a=document.createElement('a');a.href=ii.src;a.download='present.jpg';document.body.appendChild(a);a.click();a.remove();});
+document.getElementById('present-reveal-dl-btn').addEventListener('click',()=>{const ri=document.getElementById('present-reveal-img');if(!ri.src)return;const a=document.createElement('a');a.href=ri.src;a.download='present.jpg';document.body.appendChild(a);a.click();a.remove();});
 document.getElementById('pres-lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('pres-lightbox')){document.getElementById('pres-lightbox').classList.remove('open');document.body.style.overflow='';}});
 
 /* LIGHTBOX */
@@ -700,7 +757,8 @@ function showPresentOverlay(pData){
       document.getElementById('present-reveal-title').textContent=pData.title||'プレゼント 🎁';
       document.getElementById('present-reveal-msg').textContent=pData.message||'';
       const iw=document.getElementById('present-reveal-img-wrap'),ri=document.getElementById('present-reveal-img');
-      if(pData.image){iw.style.display='block';ri.src=`photos/${pData.image}`;}else{iw.style.display='none';}
+      const dlBtn=document.getElementById('present-reveal-dl-btn');
+      if(pData.image){iw.style.display='block';ri.src=`photos/${pData.image}`;dlBtn.classList.add('show');}else{iw.style.display='none';dlBtn.classList.remove('show');}
       phReveal.style.display='flex';
       const opened=getOpened();
       if(!opened.find(p=>p.date===pData.date)){opened.push({date:pData.date,title:pData.title||'プレゼント',message:pData.message||'',image:pData.image||''});setOpened(opened);renderPresentGrid();}
