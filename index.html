@@ -6,606 +6,301 @@
 <title>夏希との思い出カウントダウンガチャ 🎀</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;1,400&family=Zen+Kurenaido&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:      #1a0a14;
-  --pink:    #f472b6;
-  --pink-l:  #fba8d0;
-  --pink-ll: #fce7f3;
-  --pink-d:  #c0527a;
-  --gold:    #d4a84c;
-  --gold-l:  #f0cc78;
-  --cream:   #fdf0f5;
-  --text:    #fce7f3;
-  --dim:     rgba(252,231,243,0.45);
-  --border:  rgba(244,114,182,0.22);
-  --panel:   rgba(244,114,182,0.07);
-  --glow:    rgba(244,114,182,0.35);
-}
-
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
-body {
-  font-family: 'Noto Serif JP', serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* BG CANVAS */
-#bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
-
-/* PAGE */
-#page {
-  position:relative; z-index:1;
-  display:flex; flex-direction:column; align-items:center;
-  padding: 56px 24px 100px;
-}
-
-/* HEADER */
-.site-header { text-align:center; margin-bottom:32px; animation:fadeDown 1s ease both; }
-.header-badge {
-  display:inline-block;
-  font-family:'Cormorant Garamond',serif; font-style:italic;
-  font-size:12px; letter-spacing:4px; color:var(--pink-l);
-  border:1px solid var(--border); border-radius:999px;
-  padding:5px 18px; margin-bottom:20px; background:var(--panel);
-}
-.site-header h1 {
-  font-family:'Zen Kurenaido',cursive;
-  font-size:clamp(22px,5.5vw,38px); color:var(--cream);
-  line-height:1.5;
-  text-shadow:0 0 40px rgba(244,114,182,0.5),0 0 80px rgba(244,114,182,0.2);
-  margin-bottom:10px;
-}
-.site-header h1 .name { color:var(--pink-l); font-size:1.15em; }
-.header-deco {
-  display:flex; align-items:center; justify-content:center;
-  gap:12px; margin-top:14px; opacity:0.65;
-}
-.header-deco::before,.header-deco::after {
-  content:''; width:60px; height:1px;
-  background:linear-gradient(90deg,transparent,var(--pink),transparent);
-}
-.header-deco span { font-size:14px; color:var(--pink-l); letter-spacing:2px; }
-@keyframes fadeDown {
-  from{opacity:0;transform:translateY(-20px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-/* DAILY MESSAGE */
-#daily-msg {
-  font-family: 'Zen Kurenaido', cursive;
-  font-size: 14px;
-  color: var(--pink-l);
-  text-align: center;
-  letter-spacing: 1px;
-  opacity: 0.9;
-  padding: 6px 20px 20px;
-  animation: fadeDown 1s 0.1s ease both;
-  line-height: 1.8;
-}
-
-/* COUNTDOWN */
-#countdown-wrap { margin-bottom:48px; animation:fadeDown 1s 0.15s ease both; }
-.cd-label-top {
-  text-align:center; font-family:'Zen Kurenaido',cursive;
-  font-size:13px; letter-spacing:3px; color:var(--pink-l);
-  margin-bottom:16px; opacity:0.8;
-}
-.cd-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
-.cd-block {
-  position:relative; background:var(--panel); border:1px solid var(--border);
-  border-radius:16px; padding:18px 22px 14px; min-width:78px;
-  text-align:center; backdrop-filter:blur(10px); overflow:hidden;
-}
-.cd-block::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:1px;
-  background:linear-gradient(90deg,transparent,var(--pink-l),transparent);
-}
-.cd-block::after {
-  content:''; position:absolute; inset:0;
-  background:radial-gradient(circle at 50% 0%,rgba(244,114,182,0.12),transparent 70%);
-  pointer-events:none;
-}
-.cd-num {
-  display:block; font-family:'Cormorant Garamond',serif;
-  font-size:44px; font-weight:300; color:var(--pink-l);
-  line-height:1; text-shadow:0 0 20px var(--glow);
-}
-.cd-unit { display:block; font-size:10px; letter-spacing:2.5px; color:var(--dim); margin-top:5px; }
-
-/* BIRTHDAY OVERLAY */
-#birthday-overlay {
-  display: none;
-  position: fixed; inset: 0; z-index: 500;
-  background: linear-gradient(135deg, #1a0a14 0%, #3d1128 50%, #1a0a14 100%);
-  align-items: center; justify-content: center;
-  flex-direction: column; padding: 40px 24px;
-  overflow: hidden;
-}
-#birthday-overlay.open { display: flex; }
-.bd-content {
-  text-align: center; max-width: 380px; position: relative; z-index: 1;
-  animation: fadeDown 1.2s ease both;
-}
-.bd-emoji { font-size: 72px; margin-bottom: 24px; display: block; animation: heartbeat 1.4s ease-in-out infinite; }
-.bd-title {
-  font-family: 'Zen Kurenaido', cursive;
-  font-size: clamp(26px, 6.5vw, 44px); color: var(--pink-l);
-  text-shadow: 0 0 40px rgba(251,168,208,0.8), 0 0 80px rgba(251,168,208,0.4);
-  margin-bottom: 24px; line-height: 1.6;
-}
-.bd-message {
-  font-family: 'Noto Serif JP', serif;
-  font-size: 15px; color: var(--text);
-  line-height: 2.4; margin-bottom: 36px; opacity: 0.92;
-}
-#bd-open-album {
-  background: linear-gradient(135deg, #e879a0, #f9a8d4, #e879a0);
-  color: white; border: none; border-radius: 999px;
-  padding: 18px 48px; font-family: 'Zen Kurenaido', cursive;
-  font-size: 16px; letter-spacing: 3px; cursor: pointer;
-  box-shadow: 0 4px 24px rgba(232,121,160,0.5);
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-#bd-open-album:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(232,121,160,0.7); }
-
-/* GACHA ZONE */
-#gacha-zone {
-  display:flex; flex-direction:column; align-items:center;
-  gap:24px; width:100%; max-width:440px; margin-bottom:72px;
-  animation:fadeDown 1s 0.3s ease both;
-}
-
-/* Gacha machine wrapper */
-#gacha-machine {
-  position: relative; display: flex; align-items: center; justify-content: center;
-  width: 160px; height: 160px;
-}
-#capsule-svg {
-  width:130px; height:130px;
-  filter:drop-shadow(0 0 18px rgba(212,168,76,0.55)) drop-shadow(0 0 40px rgba(212,168,76,0.2));
-  position: relative; z-index: 1;
-}
-/* Step 1: shake */
-@keyframes shake {
-  0%,100%{transform:translate(0,0) rotate(0deg);}
-  10%{transform:translate(-5px,2px) rotate(-4deg);}
-  20%{transform:translate(5px,-3px) rotate(4deg);}
-  30%{transform:translate(-5px,1px) rotate(-3deg);}
-  40%{transform:translate(5px,3px) rotate(3deg);}
-  50%{transform:translate(-4px,-2px) rotate(-4deg);}
-  60%{transform:translate(4px,2px) rotate(3deg);}
-  70%{transform:translate(-4px,0px) rotate(-2deg);}
-  80%{transform:translate(3px,-1px) rotate(2deg);}
-  90%{transform:translate(-3px,1px) rotate(-1deg);}
-}
-#capsule-svg.shaking { animation: shake 0.08s linear infinite; }
-
-/* Step 2: spin */
-@keyframes spin { to{transform:rotate(360deg);} }
-#capsule-svg.spinning { animation:spin 0.4s linear infinite; }
-
-/* Step 3: glow pulse */
-@keyframes glowPulse {
-  0%   { filter:drop-shadow(0 0 18px rgba(212,168,76,0.55)) drop-shadow(0 0 40px rgba(212,168,76,0.2)); transform:scale(1); }
-  50%  { filter:drop-shadow(0 0 50px rgba(244,114,182,1)) drop-shadow(0 0 100px rgba(244,114,182,0.6)); transform:scale(1.18); }
-  100% { filter:drop-shadow(0 0 18px rgba(212,168,76,0.55)); transform:scale(1); }
-}
-#capsule-svg.glowing { animation: glowPulse 0.4s ease-in-out; }
-
-/* Step 4: burst */
-@keyframes burst {
-  0%  {transform:scale(1) rotate(0deg);   opacity:1;}
-  55% {transform:scale(1.4) rotate(18deg);opacity:0.7;}
-  100%{transform:scale(0) rotate(-25deg); opacity:0;}
-}
-#capsule-svg.burst { animation:burst 0.45s cubic-bezier(0.36,0.07,0.19,0.97) forwards; }
-
-/* Sparkle particles */
-.sparkle {
-  position: fixed; pointer-events: none; z-index: 999; border-radius: 50%;
-  animation: sparkleFly var(--dur) ease-out forwards;
-}
-@keyframes sparkleFly {
-  0%   { transform: translate(0,0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-}
-
-#gacha-btn {
-  position:relative; font-family:'Zen Kurenaido',cursive;
-  font-size:17px; letter-spacing:3px; color:#fff;
-  background:linear-gradient(135deg,#e879a0 0%,#f9a8d4 40%,#e879a0 100%);
-  border:none; border-radius:999px; padding:18px 58px; cursor:pointer;
-  box-shadow:0 4px 24px rgba(232,121,160,0.5),0 0 0 1px rgba(255,255,255,0.15) inset,0 1px 0 rgba(255,255,255,0.4) inset;
-  transition:transform 0.15s,box-shadow 0.15s; overflow:hidden;
-}
-#gacha-btn::after {
-  content:''; position:absolute; top:-60%; left:-60%; width:220%; height:220%;
-  background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,0.45) 50%,transparent 65%);
-  animation:btnShine 3s linear infinite;
-}
-@keyframes btnShine {
-  from{transform:translateX(-100%) rotate(20deg);}
-  to{transform:translateX(100%) rotate(20deg);}
-}
-#gacha-btn:hover:not(:disabled){
-  transform:translateY(-3px);
-  box-shadow:0 10px 36px rgba(232,121,160,0.7),0 0 0 1px rgba(255,255,255,0.2) inset;
-}
+:root{--bg:#1a0a14;--pink:#f472b6;--pink-l:#fba8d0;--pink-ll:#fce7f3;--pink-d:#c0527a;--gold:#d4a84c;--gold-l:#f0cc78;--cream:#fdf0f5;--text:#fce7f3;--dim:rgba(252,231,243,0.45);--border:rgba(244,114,182,0.22);--panel:rgba(244,114,182,0.07);--glow:rgba(244,114,182,0.35);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#page{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:56px 24px 100px;}
+.site-header{text-align:center;margin-bottom:32px;animation:fadeDown 1s ease both;}
+.header-badge{display:inline-block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;letter-spacing:4px;color:var(--pink-l);border:1px solid var(--border);border-radius:999px;padding:5px 18px;margin-bottom:20px;background:var(--panel);}
+.site-header h1{font-family:'Zen Kurenaido',cursive;font-size:clamp(22px,5.5vw,38px);color:var(--cream);line-height:1.5;text-shadow:0 0 40px rgba(244,114,182,0.5),0 0 80px rgba(244,114,182,0.2);margin-bottom:10px;}
+.site-header h1 .name{color:var(--pink-l);font-size:1.15em;}
+.header-deco{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;opacity:0.65;}
+.header-deco::before,.header-deco::after{content:'';width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--pink),transparent);}
+.header-deco span{font-size:14px;color:var(--pink-l);letter-spacing:2px;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+#game-banner{width:100%;max-width:440px;margin-bottom:28px;background:linear-gradient(135deg,rgba(244,114,182,0.12),rgba(212,168,76,0.1));border:1px solid var(--border);border-radius:16px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-decoration:none;transition:transform 0.15s,box-shadow 0.2s;animation:fadeDown 1s 0.1s ease both;}
+#game-banner:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(244,114,182,0.2);}
+.game-banner-left{display:flex;align-items:center;gap:12px;}
+.game-banner-icon{font-size:28px;}
+.game-banner-title{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--cream);letter-spacing:1px;}
+.game-banner-sub{font-size:11px;color:var(--dim);margin-top:2px;}
+.game-banner-arrow{font-size:20px;color:var(--pink-l);opacity:0.7;}
+#daily-msg{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--pink-l);text-align:center;letter-spacing:1px;opacity:0.9;padding:6px 20px 20px;animation:fadeDown 1s 0.1s ease both;line-height:1.8;}
+#countdown-wrap{margin-bottom:48px;animation:fadeDown 1s 0.15s ease both;}
+.cd-label-top{text-align:center;font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:3px;color:var(--pink-l);margin-bottom:16px;opacity:0.8;}
+.cd-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.cd-block{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px 22px 14px;min-width:78px;text-align:center;backdrop-filter:blur(10px);overflow:hidden;}
+.cd-block::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--pink-l),transparent);}
+.cd-block::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(244,114,182,0.12),transparent 70%);pointer-events:none;}
+.cd-num{display:block;font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--pink-l);line-height:1;text-shadow:0 0 20px var(--glow);}
+.cd-unit{display:block;font-size:10px;letter-spacing:2.5px;color:var(--dim);margin-top:5px;}
+#birthday-overlay{display:none;position:fixed;inset:0;z-index:500;background:linear-gradient(135deg,#1a0a14 0%,#3d1128 50%,#1a0a14 100%);align-items:center;justify-content:center;flex-direction:column;padding:40px 24px;overflow:hidden;}
+#birthday-overlay.open{display:flex;}
+.bd-content{text-align:center;max-width:380px;position:relative;z-index:1;animation:fadeDown 1.2s ease both;}
+.bd-emoji{font-size:72px;margin-bottom:24px;display:block;animation:heartbeat 1.4s ease-in-out infinite;}
+.bd-title{font-family:'Zen Kurenaido',cursive;font-size:clamp(26px,6.5vw,44px);color:var(--pink-l);text-shadow:0 0 40px rgba(251,168,208,0.8),0 0 80px rgba(251,168,208,0.4);margin-bottom:24px;line-height:1.6;}
+.bd-message{font-family:'Noto Serif JP',serif;font-size:15px;color:var(--text);line-height:2.4;margin-bottom:36px;opacity:0.92;}
+#bd-open-album{background:linear-gradient(135deg,#e879a0,#f9a8d4,#e879a0);color:white;border:none;border-radius:999px;padding:18px 48px;font-family:'Zen Kurenaido',cursive;font-size:16px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 24px rgba(232,121,160,0.5);transition:transform 0.15s,box-shadow 0.15s;}
+#bd-open-album:hover{transform:translateY(-3px);box-shadow:0 10px 36px rgba(232,121,160,0.7);}
+#gacha-zone{display:flex;flex-direction:column;align-items:center;gap:24px;width:100%;max-width:440px;margin-bottom:72px;animation:fadeDown 1s 0.3s ease both;}
+#gacha-machine{position:relative;display:flex;align-items:center;justify-content:center;width:160px;height:160px;}
+#capsule-svg{width:130px;height:130px;filter:drop-shadow(0 0 18px rgba(212,168,76,0.55)) drop-shadow(0 0 40px rgba(212,168,76,0.2));position:relative;z-index:1;}
+@keyframes shake{0%,100%{transform:translate(0,0) rotate(0deg);}10%{transform:translate(-5px,2px) rotate(-4deg);}20%{transform:translate(5px,-3px) rotate(4deg);}30%{transform:translate(-5px,1px) rotate(-3deg);}40%{transform:translate(5px,3px) rotate(3deg);}50%{transform:translate(-4px,-2px) rotate(-4deg);}60%{transform:translate(4px,2px) rotate(3deg);}70%{transform:translate(-4px,0) rotate(-2deg);}80%{transform:translate(3px,-1px) rotate(2deg);}90%{transform:translate(-3px,1px) rotate(-1deg);}}
+#capsule-svg.shaking{animation:shake 0.08s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#capsule-svg.spinning{animation:spin 0.4s linear infinite;}
+@keyframes glowPulse{0%{filter:drop-shadow(0 0 18px rgba(212,168,76,0.55)) drop-shadow(0 0 40px rgba(212,168,76,0.2));transform:scale(1);}50%{filter:drop-shadow(0 0 50px rgba(244,114,182,1)) drop-shadow(0 0 100px rgba(244,114,182,0.6));transform:scale(1.18);}100%{filter:drop-shadow(0 0 18px rgba(212,168,76,0.55));transform:scale(1);}}
+#capsule-svg.glowing{animation:glowPulse 0.4s ease-in-out;}
+@keyframes burst{0%{transform:scale(1) rotate(0deg);opacity:1;}55%{transform:scale(1.4) rotate(18deg);opacity:0.7;}100%{transform:scale(0) rotate(-25deg);opacity:0;}}
+#capsule-svg.burst{animation:burst 0.45s cubic-bezier(0.36,0.07,0.19,0.97) forwards;}
+#gacha-btn{position:relative;font-family:'Zen Kurenaido',cursive;font-size:17px;letter-spacing:3px;color:#fff;background:linear-gradient(135deg,#e879a0 0%,#f9a8d4 40%,#e879a0 100%);border:none;border-radius:999px;padding:18px 58px;cursor:pointer;box-shadow:0 4px 24px rgba(232,121,160,0.5),0 0 0 1px rgba(255,255,255,0.15) inset,0 1px 0 rgba(255,255,255,0.4) inset;transition:transform 0.15s,box-shadow 0.15s;overflow:hidden;}
+#gacha-btn::after{content:'';position:absolute;top:-60%;left:-60%;width:220%;height:220%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,0.45) 50%,transparent 65%);animation:btnShine 3s linear infinite;}
+@keyframes btnShine{from{transform:translateX(-100%) rotate(20deg);}to{transform:translateX(100%) rotate(20deg);}}
+#gacha-btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 10px 36px rgba(232,121,160,0.7),0 0 0 1px rgba(255,255,255,0.2) inset;}
 #gacha-btn:active:not(:disabled){transform:translateY(0);}
 #gacha-btn:disabled{background:rgba(255,255,255,0.07);color:var(--dim);box-shadow:none;cursor:default;}
 #gacha-btn:disabled::after{display:none;}
-
-#status-msg {
-  font-size:13px; color:var(--dim); letter-spacing:1px;
-  text-align:center; line-height:2; min-height:28px;
-}
-
-/* LINE SHARE */
-#share-line {
-  display: none;
-  background: #06C755; color: white; border: none; border-radius: 999px;
-  padding: 11px 32px; font-family: 'Zen Kurenaido', cursive;
-  font-size: 14px; letter-spacing: 2px; cursor: pointer;
-  box-shadow: 0 4px 16px rgba(6,199,85,0.4);
-  transition: opacity 0.2s, transform 0.15s;
-}
-#share-line:hover { opacity: 0.88; transform: translateY(-2px); }
-#share-line.show { display: inline-block; }
-
-/* POLAROID */
-#photo-stage {
-  display:none; flex-direction:column; align-items:center;
-  gap:14px; width:100%; max-width:240px;
-}
-#photo-stage.show {
-  display:flex;
-  animation:polaroidIn 0.75s cubic-bezier(0.22,1,0.36,1) forwards;
-}
-@keyframes polaroidIn {
-  from{opacity:0;transform:translateY(44px) rotate(-4deg) scale(0.88);}
-  to{opacity:1;transform:translateY(0) rotate(-1.5deg) scale(1);}
-}
-.polaroid-card {
-  background:#fff; padding:14px 14px 70px; width:100%;
-  box-shadow:0 3px 10px rgba(0,0,0,0.3),0 16px 48px rgba(0,0,0,0.45);
-  position:relative;
-}
-.polaroid-card img { width:100%; aspect-ratio:3/4; object-fit:cover; display:block; }
-.polaroid-demo {
-  width:100%; aspect-ratio:3/4;
-  background:linear-gradient(135deg,#fce7f3,#fbcfe8,#f9a8d4);
-  display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:10px;
-}
+#status-msg{font-size:13px;color:var(--dim);letter-spacing:1px;text-align:center;line-height:2;min-height:28px;}
+#download-btn{display:none;align-items:center;gap:8px;background:rgba(212,168,76,0.15);border:1px solid rgba(212,168,76,0.4);border-radius:999px;color:var(--gold-l);padding:10px 28px;font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:2px;cursor:pointer;transition:background 0.2s,transform 0.15s;}
+#download-btn.show{display:flex;}
+#download-btn:hover{background:rgba(212,168,76,0.28);transform:translateY(-2px);}
+#share-line{display:none;background:#06C755;color:white;border:none;border-radius:999px;padding:11px 32px;font-family:'Zen Kurenaido',cursive;font-size:14px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 16px rgba(6,199,85,0.4);transition:opacity 0.2s,transform 0.15s;}
+#share-line:hover{opacity:0.88;transform:translateY(-2px);}
+#share-line.show{display:inline-block;}
+#photo-stage{display:none;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:240px;}
+#photo-stage.show{display:flex;animation:polaroidIn 0.75s cubic-bezier(0.22,1,0.36,1) forwards;}
+@keyframes polaroidIn{from{opacity:0;transform:translateY(44px) rotate(-4deg) scale(0.88);}to{opacity:1;transform:translateY(0) rotate(-1.5deg) scale(1);}}
+.polaroid-card{background:#fff;padding:14px 14px 70px;width:100%;box-shadow:0 3px 10px rgba(0,0,0,0.3),0 16px 48px rgba(0,0,0,0.45);position:relative;}
+.polaroid-card img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;}
+.polaroid-demo{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,#fce7f3,#fbcfe8,#f9a8d4);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
 .polaroid-demo span:first-child{font-size:48px;}
 .polaroid-demo span:last-child{font-family:'Zen Kurenaido',cursive;font-size:13px;color:#b06090;letter-spacing:1px;}
-.polaroid-label {
-  position:absolute; bottom:0; left:0; right:0;
-  display:flex; align-items:center; justify-content:center;
-  flex-direction: column; gap: 4px;
-  padding: 8px 12px 12px;
-}
-.polaroid-heart { font-size:20px; animation:heartbeat 1.4s ease-in-out infinite; }
-@keyframes heartbeat { 0%,100%{transform:scale(1);} 50%{transform:scale(1.25);} }
-.polaroid-comment-text {
-  font-family: 'Zen Kurenaido', cursive;
-  font-size: 12px; color: #c06090; text-align: center;
-  line-height: 1.5; word-break: break-all;
-  max-width: 220px;
-}
-.photo-meta { font-size:12px; color:var(--dim); letter-spacing:2px; text-align:center; }
-
-/* DIVIDER */
-.section-divider {
-  width:100%; max-width:500px; display:flex; align-items:center;
-  gap:16px; margin:0 0 28px;
-}
-.section-divider::before,.section-divider::after {
-  content:''; flex:1; height:1px;
-  background:linear-gradient(90deg,transparent,var(--pink),transparent); opacity:0.5;
-}
-.section-divider span {
-  font-family:'Zen Kurenaido',cursive; font-size:14px;
-  letter-spacing:3px; color:var(--pink-l); white-space:nowrap;
-}
-
-/* PROGRESS BAR */
-#collection-progress { width:100%; margin-bottom:16px; }
-.progress-labels {
-  display: flex; justify-content: space-between;
-  font-size: 12px; color: var(--dim); letter-spacing: 1px; margin-bottom: 8px;
-}
-.progress-track {
-  height: 4px; background: rgba(244,114,182,0.12); border-radius: 999px; overflow: hidden;
-}
-.progress-fill {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, var(--pink-d), var(--pink), var(--gold-l));
-  border-radius: 999px; transition: width 0.9s cubic-bezier(0.22,1,0.36,1);
-}
-
-/* COLLECTION */
-#collection-section { width:100%; max-width:660px; margin-bottom:80px; }
-#collection-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
-
-.col-item {
-  border-radius:10px; overflow:hidden;
-  border:1px solid var(--border);
-  cursor:pointer; transition:transform 0.25s,box-shadow 0.25s;
-  display:flex; flex-direction:column;
-}
-.col-item.unlocked:hover {
-  transform:translateY(-4px) scale(1.03);
-  box-shadow:0 12px 32px rgba(244,114,182,0.35); border-color:var(--pink);
-}
-
-/* 画像エリア（正方形） */
-.col-img-wrap {
-  aspect-ratio:1; width:100%; overflow:hidden; position:relative; flex-shrink:0;
-}
-.col-img-wrap img { width:100%; height:100%; object-fit:cover; display:block; opacity:0.9; transition:opacity 0.2s; }
+.polaroid-label{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;padding:8px 12px 12px;}
+.polaroid-heart{font-size:20px;animation:heartbeat 1.4s ease-in-out infinite;}
+@keyframes heartbeat{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.polaroid-comment-text{font-family:'Zen Kurenaido',cursive;font-size:12px;color:#c06090;text-align:center;line-height:1.5;word-break:break-all;max-width:220px;}
+.photo-meta{font-size:12px;color:var(--dim);letter-spacing:2px;text-align:center;}
+.section-divider{width:100%;max-width:500px;display:flex;align-items:center;gap:16px;margin:0 0 28px;}
+.section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--pink),transparent);opacity:0.5;}
+.section-divider span{font-family:'Zen Kurenaido',cursive;font-size:14px;letter-spacing:3px;color:var(--pink-l);white-space:nowrap;}
+#collection-progress{width:100%;margin-bottom:16px;}
+.progress-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);letter-spacing:1px;margin-bottom:8px;}
+.progress-track{height:4px;background:rgba(244,114,182,0.12);border-radius:999px;overflow:hidden;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--pink-d),var(--pink),var(--gold-l));border-radius:999px;transition:width 0.9s cubic-bezier(0.22,1,0.36,1);}
+#collection-section{width:100%;max-width:660px;margin-bottom:28px;}
+#collection-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
+.col-item{border-radius:10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:transform 0.25s,box-shadow 0.25s;display:flex;flex-direction:column;}
+.col-item.unlocked:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 12px 32px rgba(244,114,182,0.35);border-color:var(--pink);}
+.col-img-wrap{aspect-ratio:1;width:100%;overflow:hidden;position:relative;flex-shrink:0;}
+.col-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;opacity:0.9;transition:opacity 0.2s;}
 .col-item.unlocked:hover .col-img-wrap img{opacity:1;}
-.col-demo {
-  width:100%; height:100%;
-  background:linear-gradient(135deg,#fce7f3,#f9a8d4);
-  display:flex; align-items:center; justify-content:center; font-size:32px;
-}
-.col-overlay {
-  position:absolute; inset:0;
-  background:linear-gradient(transparent 50%,rgba(180,60,100,0.5));
-  opacity:0; transition:opacity 0.25s;
-  display:flex; align-items:flex-end; justify-content:center; padding-bottom:6px;
-}
+.col-demo{width:100%;height:100%;background:linear-gradient(135deg,#fce7f3,#f9a8d4);display:flex;align-items:center;justify-content:center;font-size:32px;}
+.col-overlay{position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(180,60,100,0.5));opacity:0;transition:opacity 0.25s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;}
 .col-item.unlocked:hover .col-overlay{opacity:1;}
 .col-overlay-text{font-family:'Zen Kurenaido',cursive;font-size:11px;color:white;letter-spacing:1px;}
-
-/* コメントエリア（画像の下） */
-.col-comment-area {
-  padding: 6px 8px 7px; min-height: 28px;
-  font-family: 'Zen Kurenaido', cursive;
-  font-size: 11px; color: rgba(252,231,243,0.55);
-  text-align: center; line-height: 1.5;
-  word-break: break-all;
-  background: rgba(244,114,182,0.06);
-  border-top: 1px solid rgba(244,114,182,0.1);
-}
-.col-comment-area.has-comment { color: rgba(252,231,243,0.82); }
-
-.col-item.locked {
-  aspect-ratio:1;
-  background:rgba(244,114,182,0.04); border-style:dashed;
-  border-color:rgba(244,114,182,0.12);
-  display:flex; align-items:center; justify-content:center;
-  cursor:default; flex-direction:column; gap:4px;
-}
+.col-comment-area{padding:6px 8px 7px;min-height:28px;font-family:'Zen Kurenaido',cursive;font-size:11px;color:rgba(252,231,243,0.55);text-align:center;line-height:1.5;word-break:break-all;background:rgba(244,114,182,0.06);border-top:1px solid rgba(244,114,182,0.1);}
+.col-comment-area.has-comment{color:rgba(252,231,243,0.82);}
+.col-item.locked{aspect-ratio:1;background:rgba(244,114,182,0.04);border-style:dashed;border-color:rgba(244,114,182,0.12);display:flex;align-items:center;justify-content:center;cursor:default;flex-direction:column;gap:4px;}
 .col-item.locked .lock-icon{font-size:18px;opacity:0.18;}
 .col-item.locked .lock-num{font-size:9px;color:var(--dim);opacity:0.5;letter-spacing:0.5px;}
+#present-section-wrap{width:100%;max-width:660px;margin-bottom:80px;display:none;}
+#present-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+.pres-item{background:linear-gradient(135deg,rgba(212,168,76,0.1),rgba(244,114,182,0.07));border:1px solid rgba(212,168,76,0.3);border-radius:12px;padding:20px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;}
+.pres-item:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(212,168,76,0.2);}
+.pres-item-icon{font-size:36px;}
+.pres-item-date{font-size:10px;color:var(--gold);letter-spacing:1px;}
+.pres-item-preview{font-family:'Zen Kurenaido',cursive;font-size:12px;color:var(--dim);text-align:center;line-height:1.6;word-break:break-all;}
 
 /* LIGHTBOX */
-#lightbox {
-  display:none; position:fixed; inset:0; z-index:200;
-  background:rgba(20,4,14,0.92); backdrop-filter:blur(12px);
-  align-items:center; justify-content:center; padding:32px 20px;
-}
-#lightbox.open{display:flex; animation:lbIn 0.3s ease;}
+#lightbox{display:none;position:fixed;inset:0;z-index:200;background:rgba(20,4,14,0.92);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:32px 20px;}
+#lightbox.open{display:flex;animation:lbIn 0.3s ease;}
 @keyframes lbIn{from{opacity:0;}to{opacity:1;}}
-#lightbox-inner {
-  position:relative; max-width:min(520px,92vw); width:100%;
-  animation:lbSlide 0.35s cubic-bezier(0.22,1,0.36,1);
-}
-@keyframes lbSlide{
-  from{transform:scale(0.88) translateY(24px);opacity:0;}
-  to{transform:scale(1) translateY(0);opacity:1;}
-}
-.lb-polaroid{background:#fff;padding:16px 16px 72px;box-shadow:0 24px 80px rgba(0,0,0,0.7);width:100%;position:relative;}
+#lightbox-inner{position:relative;max-width:min(380px,88vw);width:100%;animation:lbSlide 0.35s cubic-bezier(0.22,1,0.36,1);}
+@keyframes lbSlide{from{transform:scale(0.88) translateY(24px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+/* ライトボックスはポラロイドと同じスタイル */
+.lb-polaroid{background:#fff;padding:14px 14px 70px;box-shadow:0 24px 80px rgba(0,0,0,0.7);width:100%;position:relative;}
 .lb-polaroid img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;}
 .lb-demo{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,#fce7f3,#fbcfe8,#f9a8d4);display:flex;align-items:center;justify-content:center;font-size:64px;}
-.lb-bottom{
-  position:absolute;bottom:0;left:0;right:0;height:72px;
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:4px;padding:6px 16px 12px;
-}
-.lb-heart{font-size:22px;animation:heartbeat 1.4s ease-in-out infinite;}
-.lb-comment-input {
-  font-family: 'Zen Kurenaido', cursive;
-  font-size: 14px; color: #a0507a; text-align: center;
-  background: transparent; border: none;
-  border-bottom: 1.5px dashed rgba(192,96,144,0.28);
-  outline: none; width: 86%; padding: 3px 6px;
-  letter-spacing: 0.5px; transition: border-color 0.25s;
-  -webkit-appearance: none; border-radius: 0;
-}
-.lb-comment-input:focus { border-bottom-color: rgba(192,96,144,0.7); }
-.lb-comment-input::placeholder { color: rgba(160,80,122,0.38); font-size: 12px; }
-.lb-close {
-  position:absolute; top:-48px; right:0;
-  background:none; border:1px solid rgba(244,114,182,0.35); border-radius:50%;
-  width:38px; height:38px; color:var(--pink-l); font-size:18px;
-  cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s;
-}
+.lb-bottom{position:absolute;bottom:0;left:0;right:0;height:70px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;padding:6px 16px 12px;}
+.lb-heart{font-size:20px;animation:heartbeat 1.4s ease-in-out infinite;}
+.lb-comment-input{font-family:'Zen Kurenaido',cursive;font-size:14px;color:#a0507a;text-align:center;background:transparent;border:none;border-bottom:1.5px dashed rgba(192,96,144,0.28);outline:none;width:86%;padding:3px 6px;letter-spacing:0.5px;transition:border-color 0.25s;-webkit-appearance:none;border-radius:0;}
+.lb-comment-input:focus{border-bottom-color:rgba(192,96,144,0.7);}
+.lb-comment-input::placeholder{color:rgba(160,80,122,0.38);font-size:12px;}
+.lb-actions{position:absolute;bottom:-58px;left:0;right:0;display:flex;gap:10px;justify-content:center;}
+.lb-action-btn{background:rgba(212,168,76,0.18);border:1px solid rgba(212,168,76,0.4);border-radius:999px;color:var(--gold-l);padding:9px 20px;font-family:'Zen Kurenaido',cursive;font-size:12px;letter-spacing:1px;cursor:pointer;white-space:nowrap;transition:background 0.2s;}
+.lb-action-btn:hover{background:rgba(212,168,76,0.32);}
+.lb-close{position:absolute;top:-48px;right:0;background:none;border:1px solid rgba(244,114,182,0.35);border-radius:50%;width:38px;height:38px;color:var(--pink-l);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
 .lb-close:hover{background:rgba(244,114,182,0.12);}
-.lb-nav {
-  position:absolute; top:50%; transform:translateY(-50%);
-  background:rgba(244,114,182,0.12); border:1px solid rgba(244,114,182,0.3); border-radius:50%;
-  width:42px; height:42px; color:var(--pink-l); font-size:18px;
-  cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s;
-}
+.lb-nav{position:absolute;top:40%;transform:translateY(-50%);background:rgba(244,114,182,0.12);border:1px solid rgba(244,114,182,0.3);border-radius:50%;width:42px;height:42px;color:var(--pink-l);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
 .lb-nav:hover{background:rgba(244,114,182,0.25);}
-#lb-prev{left:-56px;} #lb-next{right:-56px;}
+#lb-prev{left:-52px;}#lb-next{right:-52px;}
 
-/* =============================================
-   ADMIN PANEL
-============================================= */
-#admin-panel {
-  display:none;
-  position:fixed; inset:0; z-index:300;
-  background:rgba(10,2,8,0.94); backdrop-filter:blur(16px);
-  align-items:center; justify-content:center; padding:24px;
-  overflow-y:auto;
-}
-#admin-panel.open{display:flex; animation:lbIn 0.3s ease;}
-#admin-inner {
-  width:100%; max-width:380px;
-  background:rgba(244,114,182,0.06);
-  border:1px solid rgba(244,114,182,0.3);
-  border-radius:20px; padding:32px 28px 28px;
-  margin:auto;
-}
-.admin-title {
-  font-family:'Zen Kurenaido',cursive;
-  font-size:18px; color:var(--pink-l);
-  text-align:center; letter-spacing:3px; margin-bottom:6px;
-}
-.admin-sub {
-  font-size:11px; color:var(--dim); text-align:center;
-  letter-spacing:1px; margin-bottom:28px;
-}
+/* PRESENT OVERLAY */
+#present-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(8,1,10,0.97);align-items:center;justify-content:center;padding:24px;overflow:hidden;}
+#present-overlay.open{display:flex;animation:lbIn 0.5s ease;}
+#present-bg-canvas{position:absolute;inset:0;pointer-events:none;z-index:0;}
+#present-inner{position:relative;z-index:1;text-align:center;max-width:380px;width:100%;display:flex;flex-direction:column;align-items:center;}
+#present-phase-box{display:flex;flex-direction:column;align-items:center;gap:16px;}
+#present-hint{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--pink-l);letter-spacing:2px;animation:hintPulse 1.5s ease-in-out infinite;}
+@keyframes hintPulse{0%,100%{opacity:0.4;transform:translateY(0);}50%{opacity:1;transform:translateY(-4px);}}
+#present-box-wrap{cursor:pointer;position:relative;padding:20px;}
+#present-box-svg{width:180px;height:180px;filter:drop-shadow(0 0 32px rgba(212,168,76,0.7)) drop-shadow(0 0 60px rgba(244,114,182,0.4));transition:transform 0.1s;}
+#present-box-wrap:hover #present-box-svg{transform:scale(1.05);}
+#present-box-svg.shake-box{animation:boxShake 0.5s ease-in-out;}
+@keyframes boxShake{0%,100%{transform:rotate(0);}20%{transform:rotate(-8deg) scale(1.05);}40%{transform:rotate(8deg) scale(1.08);}60%{transform:rotate(-5deg);}80%{transform:rotate(4deg);}}
+#present-box-svg.open-burst{animation:boxBurst 0.55s cubic-bezier(0.36,0.07,0.19,0.97) forwards;}
+@keyframes boxBurst{0%{transform:scale(1);opacity:1;}30%{transform:scale(1.4) rotate(-10deg);opacity:1;}60%{transform:scale(1.6) rotate(15deg);opacity:0.5;}100%{transform:scale(0) rotate(30deg);opacity:0;}}
+.tap-ring{position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(212,168,76,0.4);animation:ringPulse 1.8s ease-out infinite;pointer-events:none;}
+.tap-ring:nth-child(2){animation-delay:0.6s;}
+.tap-ring:nth-child(3){animation-delay:1.2s;}
+@keyframes ringPulse{0%{transform:scale(0.5);opacity:0.8;}100%{transform:scale(2.5);opacity:0;}}
 
-#admin-status {
-  background:rgba(244,114,182,0.08);
-  border:1px solid rgba(244,114,182,0.2);
-  border-radius:10px; padding:14px 16px; margin-bottom:24px;
-  font-size:13px; line-height:2; color:var(--text);
-}
-#admin-status .stat-row { display:flex; justify-content:space-between; align-items:center; }
-#admin-status .stat-val { color:var(--pink-l); font-weight:600; }
+/* PRESENT REVEAL */
+#present-phase-reveal{display:none;flex-direction:column;align-items:center;gap:16px;animation:revealIn 0.8s cubic-bezier(0.22,1,0.36,1) forwards;overflow-y:auto;max-height:90vh;padding:8px 0;}
+@keyframes revealIn{from{opacity:0;transform:scale(0.7) translateY(30px);}to{opacity:1;transform:scale(1) translateY(0);}}
+#present-reveal-icon{font-size:52px;animation:iconBounce 0.6s cubic-bezier(0.22,1,0.36,1) both;}
+@keyframes iconBounce{from{transform:scale(0) rotate(-20deg);}to{transform:scale(1) rotate(0);}}
+#present-reveal-title{font-family:'Zen Kurenaido',cursive;font-size:clamp(20px,5vw,30px);color:var(--gold-l);text-shadow:0 0 30px rgba(212,168,76,0.8),0 0 60px rgba(212,168,76,0.4);letter-spacing:2px;line-height:1.5;}
+/* プレゼント画像（ポラロイド風） */
+#present-reveal-img-wrap{width:100%;max-width:260px;background:#fff;padding:10px 10px 48px;box-shadow:0 8px 40px rgba(0,0,0,0.6);position:relative;display:none;}
+#present-reveal-img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;}
+#present-reveal-img-heart{position:absolute;bottom:0;left:0;right:0;height:48px;display:flex;align-items:center;justify-content:center;font-size:20px;animation:heartbeat 1.4s ease-in-out infinite;}
+#present-reveal-msg-card{background:linear-gradient(135deg,rgba(212,168,76,0.12),rgba(244,114,182,0.08));border:1px solid rgba(212,168,76,0.35);border-radius:16px;padding:20px 24px;max-width:320px;width:100%;}
+#present-reveal-msg{font-family:'Noto Serif JP',serif;font-size:15px;color:var(--text);line-height:2.2;opacity:0.95;white-space:pre-line;}
+#present-reveal-close{background:linear-gradient(135deg,#e879a0,#f9a8d4,#e879a0);color:white;border:none;border-radius:999px;padding:15px 48px;font-family:'Zen Kurenaido',cursive;font-size:16px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 24px rgba(232,121,160,0.6);transition:transform 0.15s,box-shadow 0.15s;}
+#present-reveal-close:hover{transform:translateY(-3px);box-shadow:0 10px 36px rgba(232,121,160,0.8);}
 
-.admin-accordion { margin-bottom:10px; }
-.accordion-header {
-  width:100%; background:rgba(244,114,182,0.08);
-  border:1px solid rgba(244,114,182,0.2); border-radius:10px;
-  padding:13px 16px; cursor:pointer; display:flex;
-  justify-content:space-between; align-items:center;
-  font-family:'Zen Kurenaido',cursive; font-size:14px;
-  color:var(--text); letter-spacing:1px; transition:background 0.2s;
-}
+/* PRESENT VIEWER */
+#pres-lightbox{display:none;position:fixed;inset:0;z-index:250;background:rgba(10,2,8,0.96);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:32px 24px;overflow-y:auto;}
+#pres-lightbox.open{display:flex;animation:lbIn 0.3s ease;}
+#pres-lb-inner{max-width:360px;width:100%;text-align:center;animation:lbSlide 0.35s cubic-bezier(0.22,1,0.36,1);display:flex;flex-direction:column;align-items:center;gap:14px;margin:auto;}
+.pres-lb-icon{font-size:48px;}
+.pres-lb-title{font-family:'Zen Kurenaido',cursive;font-size:20px;color:var(--gold-l);text-shadow:0 0 24px rgba(212,168,76,0.6);}
+.pres-lb-date{font-size:11px;color:var(--gold);letter-spacing:2px;opacity:0.8;}
+#pres-lb-img-wrap{width:100%;max-width:240px;background:#fff;padding:10px 10px 44px;box-shadow:0 8px 32px rgba(0,0,0,0.5);position:relative;display:none;}
+#pres-lb-img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;}
+#pres-lb-img-heart{position:absolute;bottom:0;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:center;font-size:18px;animation:heartbeat 1.4s ease-in-out infinite;}
+.pres-lb-msg{font-family:'Noto Serif JP',serif;font-size:14px;color:var(--text);line-height:2.2;opacity:0.9;white-space:pre-line;text-align:center;}
+.pres-lb-close{background:none;border:1px solid rgba(244,114,182,0.35);border-radius:50%;width:38px;height:38px;color:var(--pink-l);font-size:18px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background 0.2s;margin-top:8px;}
+.pres-lb-close:hover{background:rgba(244,114,182,0.12);}
+
+/* ADMIN */
+#admin-panel{display:none;position:fixed;inset:0;z-index:300;background:rgba(10,2,8,0.94);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:24px;overflow-y:auto;}
+#admin-panel.open{display:flex;animation:lbIn 0.3s ease;}
+#admin-inner{width:100%;max-width:380px;background:rgba(244,114,182,0.06);border:1px solid rgba(244,114,182,0.3);border-radius:20px;padding:32px 28px 28px;margin:auto;}
+.admin-title{font-family:'Zen Kurenaido',cursive;font-size:18px;color:var(--pink-l);text-align:center;letter-spacing:3px;margin-bottom:6px;}
+.admin-sub{font-size:11px;color:var(--dim);text-align:center;letter-spacing:1px;margin-bottom:28px;}
+#admin-status{background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.2);border-radius:10px;padding:14px 16px;margin-bottom:24px;font-size:13px;line-height:2;color:var(--text);}
+#admin-status .stat-row{display:flex;justify-content:space-between;align-items:center;}
+#admin-status .stat-val{color:var(--pink-l);font-weight:600;}
+.admin-accordion{margin-bottom:10px;}
+.accordion-header{width:100%;background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.2);border-radius:10px;padding:13px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--text);letter-spacing:1px;transition:background 0.2s;}
 .accordion-header:hover{background:rgba(244,114,182,0.15);}
 .accordion-header .arrow{font-size:10px;transition:transform 0.25s;}
 .accordion-header.open .arrow{transform:rotate(180deg);}
-.accordion-body {
-  max-height:0; overflow:hidden; transition:max-height 0.35s ease;
-  background:rgba(244,114,182,0.04);
-  border:1px solid rgba(244,114,182,0.12);
-  border-top:none; border-radius:0 0 10px 10px;
-}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height 0.35s ease;background:rgba(244,114,182,0.04);border:1px solid rgba(244,114,182,0.12);border-top:none;border-radius:0 0 10px 10px;}
 .accordion-body.open{max-height:400px;}
-.accordion-content { padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
-.accordion-desc { font-size:12px; color:var(--dim); line-height:1.7; margin-bottom:4px; }
-
-.admin-btn {
-  width:100%; padding:11px 16px; border-radius:8px; border:none;
-  font-family:'Zen Kurenaido',cursive; font-size:13px; letter-spacing:1px;
-  cursor:pointer; transition:opacity 0.2s, transform 0.1s; display:flex;
-  align-items:center; gap:8px; justify-content:center;
-}
+.accordion-content{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.accordion-desc{font-size:12px;color:var(--dim);line-height:1.7;margin-bottom:4px;}
+.admin-btn{width:100%;padding:11px 16px;border-radius:8px;border:none;font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:1px;cursor:pointer;transition:opacity 0.2s,transform 0.1s;display:flex;align-items:center;gap:8px;justify-content:center;}
 .admin-btn:active{transform:scale(0.97);}
-.admin-btn.pink  {background:rgba(232,121,160,0.22);color:var(--pink-l);border:1px solid rgba(232,121,160,0.35);}
-.admin-btn.red   {background:rgba(251,113,133,0.18);color:#fda4af;border:1px solid rgba(251,113,133,0.3);}
-.admin-btn.gold  {background:rgba(212,168,76,0.18); color:var(--gold-l);border:1px solid rgba(212,168,76,0.3);}
+.admin-btn.pink{background:rgba(232,121,160,0.22);color:var(--pink-l);border:1px solid rgba(232,121,160,0.35);}
+.admin-btn.red{background:rgba(251,113,133,0.18);color:#fda4af;border:1px solid rgba(251,113,133,0.3);}
+.admin-btn.gold{background:rgba(212,168,76,0.18);color:var(--gold-l);border:1px solid rgba(212,168,76,0.3);}
 .admin-btn:hover{opacity:0.85;}
-
-/* Comment editor */
-#acc-comments-body {
-  max-height: 340px !important;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(244,114,182,0.3) transparent;
-}
-.comment-item {
-  display: flex; flex-direction: column; gap: 5px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(244,114,182,0.1);
-  margin-bottom: 12px;
-}
-.comment-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.comment-item-label { font-size: 11px; color: var(--dim); letter-spacing: 1px; }
-.comment-input {
-  width: 100%; background: rgba(244,114,182,0.06);
-  border: 1px solid rgba(244,114,182,0.2); border-radius: 8px;
-  padding: 8px 10px; color: var(--text);
-  font-family: 'Zen Kurenaido', cursive; font-size: 13px;
-  resize: none; outline: none; transition: border-color 0.2s; line-height: 1.5;
-}
-.comment-input:focus { border-color: rgba(244,114,182,0.55); }
-.comment-save-btn {
-  width: 100%; padding: 10px; margin-top: 4px;
-  background: rgba(212,168,76,0.18); color: var(--gold-l);
-  border: 1px solid rgba(212,168,76,0.3); border-radius: 8px;
-  font-family: 'Zen Kurenaido', cursive; font-size: 13px;
-  cursor: pointer; transition: opacity 0.2s; letter-spacing: 1px;
-}
-.comment-save-btn:hover { opacity: 0.85; }
-
-#admin-toast {
-  font-size:12px; color:var(--pink-l); text-align:center;
-  min-height:20px; margin-top:16px; letter-spacing:1px; opacity:0;
-  transition:opacity 0.3s;
-}
+#admin-toast{font-size:12px;color:var(--pink-l);text-align:center;min-height:20px;margin-top:16px;letter-spacing:1px;opacity:0;transition:opacity 0.3s;}
 #admin-toast.show{opacity:1;}
-
-#admin-close {
-  width:100%; margin-top:20px; padding:12px;
-  background:none; border:1px solid rgba(244,114,182,0.25); border-radius:10px;
-  color:var(--dim); font-family:'Zen Kurenaido',cursive; font-size:13px;
-  letter-spacing:2px; cursor:pointer; transition:background 0.2s;
-}
+#admin-close{width:100%;margin-top:20px;padding:12px;background:none;border:1px solid rgba(244,114,182,0.25);border-radius:10px;color:var(--dim);font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:2px;cursor:pointer;transition:background 0.2s;}
 #admin-close:hover{background:rgba(244,114,182,0.08);}
-
-/* CONFETTI / SPARKLE */
-.confetti-piece {
-  position:fixed; top:-14px; pointer-events:none; z-index:999;
-  animation:confettiFall linear forwards;
-}
-@keyframes confettiFall {
-  0%{transform:translateY(0) rotate(0deg);opacity:1;}
-  80%{opacity:1;}
-  100%{transform:translateY(108vh) rotate(900deg);opacity:0;}
-}
-
-/* FOOTER */
-footer {
-  font-family:'Cormorant Garamond',serif; font-style:italic;
-  font-size:13px; color:var(--dim); letter-spacing:2px; text-align:center;
-  margin-top:20px; cursor:default; user-select:none;
-  padding:8px 16px;
-}
-
-@media(max-width:420px){
-  .cd-block{min-width:64px;padding:14px 14px 12px;} .cd-num{font-size:34px;}
-  #collection-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
-  #lb-prev{left:-10px;top:auto;bottom:-56px;} #lb-next{right:-10px;top:auto;bottom:-56px;}
-  #admin-inner{padding:24px 18px 20px;}
-}
+.confetti-piece{position:fixed;top:-14px;pointer-events:none;z-index:9999;animation:confettiFall linear forwards;}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}80%{opacity:1;}100%{transform:translateY(108vh) rotate(900deg);opacity:0;}}
+footer{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--dim);letter-spacing:2px;text-align:center;margin-top:20px;cursor:default;user-select:none;padding:8px 16px;}
+#download-canvas{display:none;}
+@media(max-width:420px){.cd-block{min-width:64px;padding:14px 14px 12px;}.cd-num{font-size:34px;}#collection-grid{grid-template-columns:repeat(3,1fr);gap:8px;}#lb-prev{left:-8px;top:auto;bottom:-56px;}#lb-next{right:-8px;top:auto;bottom:-56px;}#admin-inner{padding:24px 18px 20px;}}
 </style>
 </head>
 <body>
-
 <canvas id="bg-canvas"></canvas>
 
-<!-- BIRTHDAY OVERLAY -->
 <div id="birthday-overlay">
   <div class="bd-content">
     <span class="bd-emoji">🎂</span>
     <p class="bd-title">夏希、<br>お誕生日おめでとう！</p>
-    <p class="bd-message">
-      いつもそばにいてくれてありがとう。<br>
-      たくさんの思い出をありがとう。<br>
-      大好きだよ、これからもよろしくね 💕
-    </p>
+    <p class="bd-message">いつもそばにいてくれてありがとう。<br>たくさんの思い出をありがとう。<br>大好きだよ、これからもよろしくね 💕</p>
     <button id="bd-open-album">思い出アルバムを見る 🎀</button>
   </div>
 </div>
 
-<div id="page">
+<!-- PRESENT OVERLAY -->
+<div id="present-overlay">
+  <canvas id="present-bg-canvas"></canvas>
+  <div id="present-inner">
+    <div id="present-phase-box">
+      <div id="present-hint">タップして開けてね 🎀</div>
+      <div id="present-box-wrap">
+        <div class="tap-ring"></div><div class="tap-ring"></div><div class="tap-ring"></div>
+        <svg id="present-box-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="pb-body" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f9a8d4"/><stop offset="100%" stop-color="#e879a0"/></linearGradient>
+            <linearGradient id="pb-lid" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fce7f3"/><stop offset="100%" stop-color="#fba8d0"/></linearGradient>
+            <linearGradient id="pb-ribbon" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f0cc78"/><stop offset="100%" stop-color="#d4a84c"/></linearGradient>
+          </defs>
+          <ellipse cx="80" cy="150" rx="52" ry="7" fill="rgba(0,0,0,0.25)"/>
+          <rect x="20" y="74" width="120" height="76" rx="6" fill="url(#pb-body)"/>
+          <rect x="14" y="58" width="132" height="24" rx="6" fill="url(#pb-lid)"/>
+          <rect x="72" y="74" width="16" height="76" fill="url(#pb-ribbon)" opacity="0.85"/>
+          <rect x="14" y="64" width="132" height="12" fill="url(#pb-ribbon)" opacity="0.85"/>
+          <ellipse cx="64" cy="58" rx="24" ry="13" fill="url(#pb-ribbon)" transform="rotate(-30 64 58)" opacity="0.9"/>
+          <ellipse cx="96" cy="58" rx="24" ry="13" fill="url(#pb-ribbon)" transform="rotate(30 96 58)" opacity="0.9"/>
+          <circle cx="80" cy="58" r="10" fill="#f0cc78"/>
+          <circle cx="80" cy="58" r="5.5" fill="#d4a84c"/>
+          <ellipse cx="40" cy="64" rx="11" ry="4.5" fill="white" opacity="0.22" transform="rotate(-15 40 64)"/>
+        </svg>
+      </div>
+    </div>
+    <div id="present-phase-reveal">
+      <div id="present-reveal-icon">🎁</div>
+      <div id="present-reveal-title"></div>
+      <div id="present-reveal-img-wrap">
+        <img id="present-reveal-img" src="" alt="">
+        <div id="present-reveal-img-heart">💕</div>
+      </div>
+      <div id="present-reveal-msg-card">
+        <div id="present-reveal-msg"></div>
+      </div>
+      <button id="present-reveal-close">とじる 💕</button>
+    </div>
+  </div>
+</div>
 
+<!-- PRESENT VIEWER -->
+<div id="pres-lightbox">
+  <div id="pres-lb-inner">
+    <div class="pres-lb-icon">🎁</div>
+    <div class="pres-lb-title" id="pres-lb-title"></div>
+    <div class="pres-lb-date" id="pres-lb-date"></div>
+    <div id="pres-lb-img-wrap"><img id="pres-lb-img" src="" alt=""><div id="pres-lb-img-heart">💕</div></div>
+    <div class="pres-lb-msg" id="pres-lb-msg"></div>
+    <button class="pres-lb-close" id="pres-lb-close">✕</button>
+  </div>
+</div>
+
+<div id="page">
   <header class="site-header">
     <div class="header-badge">✦ birthday countdown ✦</div>
     <h1><span class="name">夏希</span>との<br>思い出カウントダウンガチャ</h1>
     <div class="header-deco"><span>🎀</span></div>
   </header>
+
+  <a id="game-banner" href="game.html">
+    <div class="game-banner-left">
+      <div class="game-banner-icon">🎮</div>
+      <div><div class="game-banner-title">ミニゲームで遊ぶ</div><div class="game-banner-sub">ハートをよけながら飛んでね 💕</div></div>
+    </div>
+    <div class="game-banner-arrow">›</div>
+  </a>
 
   <div id="daily-msg"></div>
 
@@ -623,16 +318,9 @@ footer {
     <div id="gacha-machine">
       <svg id="capsule-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <radialGradient id="gTop" cx="38%" cy="32%">
-            <stop offset="0%"   stop-color="#f8e090"/>
-            <stop offset="60%"  stop-color="#d4a840"/>
-            <stop offset="100%" stop-color="#a07820"/>
-          </radialGradient>
-          <radialGradient id="gBot" cx="55%" cy="68%">
-            <stop offset="0%"   stop-color="#f5eed8"/>
-            <stop offset="100%" stop-color="#c8aa60"/>
-          </radialGradient>
-          <clipPath id="clipT"><rect x="0" y="0"  width="100" height="50"/></clipPath>
+          <radialGradient id="gTop" cx="38%" cy="32%"><stop offset="0%" stop-color="#f8e090"/><stop offset="60%" stop-color="#d4a840"/><stop offset="100%" stop-color="#a07820"/></radialGradient>
+          <radialGradient id="gBot" cx="55%" cy="68%"><stop offset="0%" stop-color="#f5eed8"/><stop offset="100%" stop-color="#c8aa60"/></radialGradient>
+          <clipPath id="clipT"><rect x="0" y="0" width="100" height="50"/></clipPath>
           <clipPath id="clipB"><rect x="0" y="50" width="100" height="50"/></clipPath>
         </defs>
         <ellipse cx="50" cy="97" rx="26" ry="3.5" fill="rgba(0,0,0,0.25)"/>
@@ -642,22 +330,21 @@ footer {
         <ellipse cx="37" cy="26" rx="7" ry="11" fill="white" opacity="0.3" transform="rotate(-18 37 26)"/>
       </svg>
     </div>
-
     <div id="photo-stage">
-      <div class="polaroid-card">
+      <div class="polaroid-card" id="main-polaroid">
         <img id="photo-img" src="" alt="思い出の写真" style="display:none">
-        <div class="polaroid-demo" id="photo-demo">
-          <span>📷</span><span>夏希との思い出</span>
-        </div>
+        <div class="polaroid-demo" id="photo-demo"><span>📷</span><span>夏希との思い出</span></div>
         <div class="polaroid-label">
           <span class="polaroid-heart">💕</span>
           <div class="polaroid-comment-text" id="photo-comment"></div>
         </div>
       </div>
       <div class="photo-meta" id="photo-meta"></div>
-      <button id="share-line">💚 LINEでシェア</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center">
+        <button id="download-btn">📥 チェキを保存</button>
+        <button id="share-line">💚 LINEでシェア</button>
+      </div>
     </div>
-
     <button id="gacha-btn">🎀 ガチャをひく 🎀</button>
     <div id="status-msg"></div>
   </div>
@@ -665,19 +352,18 @@ footer {
   <div class="section-divider"><span>🎀 思い出コレクション 🎀</span></div>
   <section id="collection-section">
     <div id="collection-progress">
-      <div class="progress-labels">
-        <span>解放した思い出</span>
-        <span id="progress-text">0 / 0 枚</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
+      <div class="progress-labels"><span>解放した思い出</span><span id="progress-text">0 / 0 枚</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
     <div id="collection-grid"></div>
   </section>
 
-  <footer id="footer-trigger">made with love for 夏希 💕</footer>
+  <div id="present-section-wrap">
+    <div class="section-divider"><span>🎁 プレゼントボックス 🎁</span></div>
+    <div id="present-grid"></div>
+  </div>
 
+  <footer id="footer-trigger">made with love for 夏希 💕</footer>
 </div>
 
 <!-- LIGHTBOX -->
@@ -686,716 +372,405 @@ footer {
     <button class="lb-close" id="lb-close">✕</button>
     <button class="lb-nav" id="lb-prev">‹</button>
     <button class="lb-nav" id="lb-next">›</button>
-    <div class="lb-polaroid">
+    <div class="lb-polaroid" id="lb-polaroid-card">
       <img id="lb-img" src="" alt="" style="display:none">
       <div class="lb-demo" id="lb-demo" style="display:none">📷</div>
       <div class="lb-bottom">
         <span class="lb-heart">💕</span>
-        <input type="text" id="lb-comment-input" class="lb-comment-input"
-               placeholder="ひとことメモを入れてね 💕" maxlength="40">
+        <input type="text" id="lb-comment-input" class="lb-comment-input" placeholder="ひとことメモを入れてね 💕" maxlength="40">
       </div>
+    </div>
+    <div class="lb-actions">
+      <button class="lb-action-btn" id="lb-download-btn">📥 チェキを保存</button>
     </div>
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
+<!-- ADMIN -->
 <div id="admin-panel">
   <div id="admin-inner">
     <div class="admin-title">⚙️ 管理者パネル</div>
     <div class="admin-sub">フッターを5回タップで開きます</div>
-
     <div id="admin-status">
       <div class="stat-row"><span>登録写真数</span><span class="stat-val" id="st-total">--</span></div>
       <div class="stat-row"><span>解放済み</span><span class="stat-val" id="st-pulled">--</span></div>
       <div class="stat-row"><span>残りガチャ</span><span class="stat-val" id="st-today">--</span></div>
+      <div class="stat-row"><span>開封済みプレゼント</span><span class="stat-val" id="st-presents">--</span></div>
     </div>
-
-    <!-- ガチャリセット -->
     <div class="admin-accordion">
-      <button class="accordion-header" data-target="acc-gacha">
-        🔄 ガチャのリセット <span class="arrow">▼</span>
-      </button>
+      <button class="accordion-header" data-target="acc-gacha">🔄 ガチャのリセット <span class="arrow">▼</span></button>
       <div class="accordion-body" id="acc-gacha">
         <div class="accordion-content">
-          <p class="accordion-desc">ガチャを1回追加します。引き忘れたときや特別にもう1回引かせたいときに使えます。</p>
+          <p class="accordion-desc">ガチャを1回追加します。</p>
           <button class="admin-btn pink" id="btn-reset-today">➕ ガチャを1回追加</button>
-          <p class="accordion-desc" style="margin-top:4px">全ての引いた記録を消します。アルバムも全部🔒に戻ります。</p>
+          <p class="accordion-desc" style="margin-top:4px">全ての引いた記録を消します。</p>
           <button class="admin-btn red" id="btn-reset-all">🗑 全履歴をリセット</button>
         </div>
       </div>
     </div>
-
-    <!-- アルバム操作 -->
     <div class="admin-accordion">
-      <button class="accordion-header" data-target="acc-album">
-        📚 アルバム操作 <span class="arrow">▼</span>
-      </button>
+      <button class="accordion-header" data-target="acc-album">📚 アルバム操作 <span class="arrow">▼</span></button>
       <div class="accordion-body" id="acc-album">
         <div class="accordion-content">
-          <p class="accordion-desc">全ての写真をアルバムに解放します（誕生日プレゼント用）。</p>
+          <p class="accordion-desc">全ての写真をアルバムに解放します。</p>
           <button class="admin-btn gold" id="btn-unlock-all">🔓 全写真を解放する</button>
         </div>
       </div>
     </div>
-
+    <div class="admin-accordion">
+      <button class="accordion-header" data-target="acc-present-admin">🎁 プレゼント管理 <span class="arrow">▼</span></button>
+      <div class="accordion-body" id="acc-present-admin">
+        <div class="accordion-content">
+          <p class="accordion-desc">プレゼントの設定はHTMLの <code style="color:var(--gold-l);background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px">PRESENT_SCHEDULE</code> 配列を直接編集してください。</p>
+          <p class="accordion-desc">PRESENT_SCHEDULE に登録されているプレゼントを今すぐ表示してテストできます。</p>
+          <select id="present-test-select" style="width:100%;background:rgba(244,114,182,0.06);border:1px solid rgba(244,114,182,0.2);border-radius:8px;padding:9px 10px;color:var(--text);font-family:'Zen Kurenaido',cursive;font-size:13px;outline:none;margin-bottom:2px;"></select>
+          <button class="admin-btn gold" id="btn-test-present">🎁 このプレゼントをテスト表示</button>
+          <p class="accordion-desc" style="margin-top:6px">開封済みの記録をリセットします（同じ日にもう一度プレゼントを出せます）。</p>
+          <button class="admin-btn pink" id="btn-reset-presents">🔄 プレゼント開封記録をリセット</button>
+        </div>
+      </div>
+    </div>
     <div id="admin-toast"></div>
     <button id="admin-close">とじる</button>
   </div>
 </div>
 
+<canvas id="download-canvas"></canvas>
+
 <script>
 /* =============================================
-   BACKGROUND CANVAS
+   🎁 プレゼントスケジュール
+   ─────────────────────────────────────────
+   date    : "YYYY-MM-DD" 形式
+   title   : プレゼントのタイトル
+   message : メッセージ（改行は \n）
+   image   : photos/ フォルダの画像ファイル名
+             画像なしは "" にする
+   ─────────────────────────────────────────
 ============================================= */
+const PRESENT_SCHEDULE = [
+  {
+    date:    "2025-06-20",
+    title:   "半年記念日プレゼント 🎀",
+    message: "付き合って半年おめでとう！\nこれからもよろしくね 💕",
+    image:   ""
+  },
+  {
+    date:    "2025-06-30",
+    title:   "お誕生日プレゼント 🎂",
+    message: "夏希、20歳のお誕生日おめでとう！\n大好きだよ、これからも一緒にいようね 💕",
+    image:   ""
+  },
+];
+
+/* BG */
 (function BG(){
-  const c=document.getElementById('bg-canvas'), cx=c.getContext('2d');
-  let W,H,items=[];
-  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;generate();}
-  function generate(){
-    items=[];
-    for(let i=0;i<160;i++) items.push({
-      type:'star',x:Math.random()*W,y:Math.random()*H,
-      r:Math.random()*1.3+0.2,a:Math.random(),
-      da:(Math.random()*0.25+0.06)*(Math.random()<.5?1:-1)/60
-    });
-    for(let i=0;i<18;i++) items.push({
-      type:'heart',x:Math.random()*W,y:Math.random()*H,
-      size:Math.random()*10+6,a:Math.random()*0.18+0.04,
-      vy:-(Math.random()*0.25+0.08),vx:(Math.random()-0.5)*0.15,
-      drift:Math.random()*Math.PI*2
-    });
-  }
-  function drawHeart(x,y,s,alpha){
-    cx.save();cx.translate(x,y);cx.globalAlpha=alpha;cx.fillStyle='#f472b6';
-    cx.beginPath();cx.moveTo(0,-s*.35);
-    cx.bezierCurveTo(s*.55,-s*.9,s*1.1,s*.1,0,s*.7);
-    cx.bezierCurveTo(-s*1.1,s*.1,-s*.55,-s*.9,0,-s*.35);
-    cx.fill();cx.restore();
-  }
-  function frame(){
-    cx.clearRect(0,0,W,H);
-    const gr=cx.createRadialGradient(W*.5,H*.3,0,W*.5,H*.5,H*.8);
-    gr.addColorStop(0,'rgba(80,10,50,0.6)');gr.addColorStop(1,'rgba(20,4,16,0)');
-    cx.fillStyle=gr;cx.fillRect(0,0,W,H);
-    items.forEach(it=>{
-      if(it.type==='star'){
-        it.a+=it.da;if(it.a>1||it.a<0.04)it.da*=-1;
-        cx.beginPath();cx.arc(it.x,it.y,it.r,0,Math.PI*2);
-        cx.fillStyle=`rgba(252,231,243,${it.a.toFixed(2)})`;cx.fill();
-      }else{
-        it.drift+=0.008;it.y+=it.vy;it.x+=it.vx+Math.sin(it.drift)*0.12;
-        if(it.y<-30){it.y=H+20;it.x=Math.random()*W;}
-        drawHeart(it.x,it.y,it.size,it.a);
-      }
-    });
-    requestAnimationFrame(frame);
-  }
+  const c=document.getElementById('bg-canvas'),cx=c.getContext('2d');let W,H,items=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;gen();}
+  function gen(){items=[];for(let i=0;i<160;i++)items.push({type:'star',x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+0.2,a:Math.random(),da:(Math.random()*0.25+0.06)*(Math.random()<.5?1:-1)/60});for(let i=0;i<18;i++)items.push({type:'heart',x:Math.random()*W,y:Math.random()*H,size:Math.random()*10+6,a:Math.random()*0.18+0.04,vy:-(Math.random()*0.25+0.08),vx:(Math.random()-0.5)*0.15,drift:Math.random()*Math.PI*2});}
+  function dh(x,y,s,a){cx.save();cx.translate(x,y);cx.globalAlpha=a;cx.fillStyle='#f472b6';cx.beginPath();cx.moveTo(0,-s*.35);cx.bezierCurveTo(s*.55,-s*.9,s*1.1,s*.1,0,s*.7);cx.bezierCurveTo(-s*1.1,s*.1,-s*.55,-s*.9,0,-s*.35);cx.fill();cx.restore();}
+  function frame(){cx.clearRect(0,0,W,H);const gr=cx.createRadialGradient(W*.5,H*.3,0,W*.5,H*.5,H*.8);gr.addColorStop(0,'rgba(80,10,50,0.6)');gr.addColorStop(1,'rgba(20,4,16,0)');cx.fillStyle=gr;cx.fillRect(0,0,W,H);items.forEach(it=>{if(it.type==='star'){it.a+=it.da;if(it.a>1||it.a<0.04)it.da*=-1;cx.beginPath();cx.arc(it.x,it.y,it.r,0,Math.PI*2);cx.fillStyle=`rgba(252,231,243,${it.a.toFixed(2)})`;cx.fill();}else{it.drift+=0.008;it.y+=it.vy;it.x+=it.vx+Math.sin(it.drift)*0.12;if(it.y<-30){it.y=H+20;it.x=Math.random()*W;}dh(it.x,it.y,it.size,it.a);}});requestAnimationFrame(frame);}
   resize();frame();window.addEventListener('resize',resize);
 })();
 
-/* =============================================
-   💕 毎日のメッセージ設定
-   ─────────────────────────────────────────────
-   date: "月/日" の形式で記入してください
-         例） "6/1" = 6月1日、"12/25" = 12月25日
-   msg:  その日に表示するメッセージ
-   ─────────────────────────────────────────────
-   一致する日付がない日は LOVE_MSG_DEFAULT が表示されます
-============================================= */
-const LOVE_MESSAGES = [
-  { date: '6/1',  msg: '今日もお仕事お疲れ様 💕' },
-  { date: '6/2',  msg: '夏希の笑顔が世界一！！ ' },
-  { date: '6/3',  msg: 'え、待って、かわいすぎやろ！！！！' },
-  { date: '6/4',  msg: '今日もお疲れ様 💕' },
-  { date: '6/5',  msg: '今日から3日間会えないけどガチャは引いてね👀 ' },
-  { date: '6/6',  msg: '思い出したらLINEしてほしいな...😘' },
-  { date: '6/7',  msg: '明日からもお仕事がんばろうね🔥' },
-  { date: '6/8',  msg: '今日も世界一かわいい💝' },
-  { date: '6/9',  msg: '今日も会いたいな 🌸' },
-  { date: '6/10', msg: '髪切ったの！どう？？ 💕' },
-  { date: '6/11', msg: '来週の夜は新幹線乗ったりバタバタやぞ！' },
-  { date: '6/12', msg: '出張お疲れ様！！明日は一緒に過ごそ😘' },
-  { date: '6/13', msg: 'もうすぐやぞ！！ワクワク🥰' },
-  { date: '6/14', msg: '明日から4日頑張ればディズニー！' },
-  { date: '6/15', msg: '準備できた？？もうすぐやぞ！✨' },
-  { date: '6/16', msg: '忘れ物ない？準備しときや！！ 💕' },
-  { date: '6/17', msg: '明日頑張ればディズニーや！ ' },
-  { date: '6/18', msg: 'お疲れ様！明日からいっぱい楽しむぞ！！💕' },
-  { date: '6/19', msg: '夏希のこと世界で一番愛してる！！！' },
-  { date: '6/20', msg: '半年記念日✨これからもよろしく！！！' },
-  { date: '6/21', msg: '明日から仕事嫌すぎる...😭' },
-  { date: '6/22', msg: '月曜日お疲れ様！頑張ったね！' },
-  { date: '6/23', msg: 'あと1週間切ったよ！ドキドキ 💕' },
-  { date: '6/24', msg: 'あと6日！楽しみ！！🌸' },
-  { date: '6/25', msg: 'あと5日！もうすぐ10代も終わり！！ 💕' },
-  { date: '6/26', msg: 'あと4日！もうすぐだね 🎀' },
-  { date: '6/27', msg: 'あと3日！待ち遠しいな 💕' },
-  { date: '6/28', msg: 'あと2日！楽しみにしてるよ 🎂' },
-  { date: '6/29', msg: '明日はお誕生日！大好きだよ 💕' },
-  { date: '6/30', msg: '夏希お誕生日おめでとう！一緒に良い一年にしようね💕' },
-  // ← ここにどんどん追加してね
-];
+/* LOVE MESSAGES */
+const LOVE_MESSAGES=[{date:'6/1',msg:'今日もお仕事お疲れ様 💕'},{date:'6/2',msg:'夏希の笑顔が世界一！！ '},{date:'6/3',msg:'え、待って、かわいすぎやろ！！！！'},{date:'6/4',msg:'今日もお疲れ様 💕'},{date:'6/5',msg:'今日から3日間会えないけどガチャは引いてね👀 '},{date:'6/6',msg:'思い出したらLINEしてほしいな...😘'},{date:'6/7',msg:'明日からもお仕事がんばろうね🔥'},{date:'6/8',msg:'今日も世界一かわいい💝'},{date:'6/9',msg:'今日も会いたいな 🌸'},{date:'6/10',msg:'髪切ったの！どう？？ 💕'},{date:'6/11',msg:'来週の夜は新幹線乗ったりバタバタやぞ！'},{date:'6/12',msg:'出張お疲れ様！！明日は一緒に過ごそ😘'},{date:'6/13',msg:'もうすぐやぞ！！ワクワク🥰'},{date:'6/14',msg:'明日から4日頑張ればディズニー！'},{date:'6/15',msg:'準備できた？？もうすぐやぞ！✨'},{date:'6/16',msg:'忘れ物ない？準備しときや！！ 💕'},{date:'6/17',msg:'明日頑張ればディズニーや！ '},{date:'6/18',msg:'お疲れ様！明日からいっぱい楽しむぞ！！💕'},{date:'6/19',msg:'夏希のこと世界で一番愛してる！！！'},{date:'6/20',msg:'半年記念日✨これからもよろしく！！！'},{date:'6/21',msg:'明日から仕事嫌すぎる...😭'},{date:'6/22',msg:'月曜日お疲れ様！頑張ったね！'},{date:'6/23',msg:'あと1週間切ったよ！ドキドキ 💕'},{date:'6/24',msg:'あと6日！楽しみ！！🌸'},{date:'6/25',msg:'あと5日！もうすぐ10代も終わり！！ 💕'},{date:'6/26',msg:'あと4日！もうすぐだね 🎀'},{date:'6/27',msg:'あと3日！待ち遠しいな 💕'},{date:'6/28',msg:'あと2日！楽しみにしてるよ 🎂'},{date:'6/29',msg:'明日はお誕生日！大好きだよ 💕'},{date:'6/30',msg:'夏希お誕生日おめでとう！一緒に良い一年にしようね💕'},];
+const LOVE_MSG_DEFAULT='今日も好きだよ、夏希 💕';
+function getLoveMsg(){const now=new Date(),key=`${now.getMonth()+1}/${now.getDate()}`,e=LOVE_MESSAGES.find(e=>e.date===key);return e?e.msg:LOVE_MSG_DEFAULT;}
 
-// 日付が設定されていない日のデフォルトメッセージ
-const LOVE_MSG_DEFAULT = '今日も好きだよ、夏希 💕';
+/* COUNTDOWN */
+const BDM=5,BDD=30;
+function getBD(){const now=new Date(),yr=(now.getMonth()>BDM||(now.getMonth()===BDM&&now.getDate()>=BDD))?now.getFullYear()+1:now.getFullYear(),diff=new Date(yr,BDM,BDD,0,0,0)-now,isToday=(now.getMonth()===BDM&&now.getDate()===BDD);return{diff,isToday};}
+function updateCD(){const{diff,isToday}=getBD();if(isToday||diff<=0){document.getElementById('countdown-wrap').style.display='none';return;}const d=Math.floor(diff/864e5),h=Math.floor((diff%864e5)/36e5),m=Math.floor((diff%36e5)/6e4),s=Math.floor((diff%6e4)/1e3);['cd-d','cd-h','cd-m','cd-s'].forEach((id,i)=>document.getElementById(id).textContent=String([d,h,m,s][i]).padStart(2,'0'));}
+updateCD();setInterval(updateCD,1000);
 
-function getTodayLoveMessage() {
-  const now = new Date();
-  const key = `${now.getMonth() + 1}/${now.getDate()}`;
-  const entry = LOVE_MESSAGES.find(e => e.date === key);
-  return entry ? entry.msg : LOVE_MSG_DEFAULT;
+/* STORAGE */
+const K_PULLED='bdg_pulled_v2',K_COMMENTS='bdg_comments_v1',K_BD_SHOWN='bdg_bd_shown_v1',K_PENDING='bdg_pending_v1',K_LAST_CREDITED='bdg_last_credited_v1',K_LAST_IDX='bdg_last_idx_v1',K_OPENED='bdg_opened_presents_v1';
+const getPulled=()=>{try{return JSON.parse(localStorage.getItem(K_PULLED))||[];}catch{return[];}};
+const setPulled=a=>localStorage.setItem(K_PULLED,JSON.stringify(a));
+const getComments=()=>{try{return JSON.parse(localStorage.getItem(K_COMMENTS))||{};}catch{return{};}};
+const setComments=o=>localStorage.setItem(K_COMMENTS,JSON.stringify(o));
+const getPending=()=>Math.max(0,parseInt(localStorage.getItem(K_PENDING)||'0'));
+const setPending=n=>localStorage.setItem(K_PENDING,String(Math.max(0,n)));
+const getLastIdx=()=>{try{const v=localStorage.getItem(K_LAST_IDX);return v===null?null:parseInt(v);}catch{return null;}};
+const setLastIdx=i=>localStorage.setItem(K_LAST_IDX,String(i));
+const clearAll=()=>{[K_PULLED,K_PENDING,K_LAST_CREDITED,K_LAST_IDX].forEach(k=>localStorage.removeItem(k));};
+const todayStr=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+const getOpened=()=>{try{return JSON.parse(localStorage.getItem(K_OPENED))||[];}catch{return[];}};
+const setOpened=a=>localStorage.setItem(K_OPENED,JSON.stringify(a));
+function daysBetween(a,b){const d1=new Date(a),d2=new Date(b);d1.setHours(0,0,0,0);d2.setHours(0,0,0,0);return Math.round((d2-d1)/86400000);}
+function creditPulls(){const today=todayStr(),last=localStorage.getItem(K_LAST_CREDITED);if(!last){setPending(getPending()+1);localStorage.setItem(K_LAST_CREDITED,today);}else{const diff=daysBetween(last,today);if(diff>0){setPending(getPending()+diff);localStorage.setItem(K_LAST_CREDITED,today);}}}
+
+/* PHOTOS */
+let photoList=[];
+async function loadPhotos(){try{const r=await fetch('photos.json?v='+Date.now());if(!r.ok)throw 0;const raw=await r.json();photoList=raw.map(item=>typeof item==='string'?{file:item,note:''}:item);}catch{photoList=Array(6).fill(null).map(()=>({file:'__demo__',note:''}));}}
+function getComment(idx){const local=getComments()[idx];return local!==undefined?local:photoList[idx]?.note||'';}
+function pickRandom(){if(!photoList.length)return null;const pulled=getPulled(),allIdx=photoList.map((_,i)=>i),unPulled=allIdx.filter(i=>!pulled.includes(i)),pool=unPulled.length?unPulled:allIdx;return pool[Math.floor(Math.random()*pool.length)];}
+
+/* SHOW PHOTO */
+let currentPhotoIdx=null;
+function showPhoto(idx,animate=true){
+  currentPhotoIdx=idx;
+  const stage=document.getElementById('photo-stage'),img=document.getElementById('photo-img'),demo=document.getElementById('photo-demo');
+  const item=photoList[idx],isDemo=!item||item.file==='__demo__';
+  if(isDemo){img.style.display='none';demo.style.display='flex';}else{img.src=`photos/${item.file}`;img.style.display='block';demo.style.display='none';}
+  document.getElementById('photo-meta').textContent=`思い出 ${idx+1} / ${photoList.length}`;
+  document.getElementById('photo-comment').textContent=getComment(idx);
+  document.getElementById('share-line').classList.add('show');
+  document.getElementById('download-btn').classList.add('show');
+  if(animate){stage.classList.remove('show');requestAnimationFrame(()=>stage.classList.add('show'));}else{stage.classList.add('show');}
 }
 
-/* =============================================
-   COUNTDOWN
-============================================= */
-const BIRTHDAY_MONTH = 5; // June (0-indexed)
-const BIRTHDAY_DAY   = 30;
-
-function getBirthdayInfo() {
-  const now = new Date();
-  const yr = (now.getMonth() > BIRTHDAY_MONTH || (now.getMonth() === BIRTHDAY_MONTH && now.getDate() >= BIRTHDAY_DAY))
-             ? now.getFullYear() + 1 : now.getFullYear();
-  const target = new Date(yr, BIRTHDAY_MONTH, BIRTHDAY_DAY, 0, 0, 0);
-  const diff = target - now;
-  const isToday = (now.getMonth() === BIRTHDAY_MONTH && now.getDate() === BIRTHDAY_DAY);
-  return { diff, isToday, yr };
-}
-
-function updateCountdown(){
-  const { diff, isToday } = getBirthdayInfo();
-  if (isToday || diff <= 0) {
-    document.getElementById('countdown-wrap').style.display='none';
-    return;
-  }
-  const d=Math.floor(diff/864e5), h=Math.floor((diff%864e5)/36e5),
-        m=Math.floor((diff%36e5)/6e4), s=Math.floor((diff%6e4)/1e3);
-  document.getElementById('cd-d').textContent=String(d).padStart(2,'0');
-  document.getElementById('cd-h').textContent=String(h).padStart(2,'0');
-  document.getElementById('cd-m').textContent=String(m).padStart(2,'0');
-  document.getElementById('cd-s').textContent=String(s).padStart(2,'0');
-
-}
-updateCountdown();
-setInterval(updateCountdown, 1000);
-
-/* =============================================
-   STORAGE
-============================================= */
-const K_PULLED        = 'bdg_pulled_v2';
-const K_COMMENTS      = 'bdg_comments_v1';
-const K_BD_SHOWN      = 'bdg_bd_shown_v1';
-const K_PENDING       = 'bdg_pending_v1';       // 残りガチャ回数
-const K_LAST_CREDITED = 'bdg_last_credited_v1'; // 最後に回数を付与した日付
-const K_LAST_IDX      = 'bdg_last_idx_v1';      // 最後に引いた写真インデックス
-
-const getPulled   = () => { try{return JSON.parse(localStorage.getItem(K_PULLED))||[];}catch{return[];} };
-const setPulled   = a  => localStorage.setItem(K_PULLED, JSON.stringify(a));
-const getComments = () => { try{return JSON.parse(localStorage.getItem(K_COMMENTS))||{};}catch{return{};} };
-const setComments = o  => localStorage.setItem(K_COMMENTS, JSON.stringify(o));
-const getPending  = () => Math.max(0, parseInt(localStorage.getItem(K_PENDING) || '0'));
-const setPending  = n  => localStorage.setItem(K_PENDING, String(Math.max(0, n)));
-const getLastIdx  = () => { try{const v=localStorage.getItem(K_LAST_IDX); return v===null?null:parseInt(v);}catch{return null;} };
-const setLastIdx  = i  => localStorage.setItem(K_LAST_IDX, String(i));
-const clearAll    = () => {
-  [K_PULLED, K_PENDING, K_LAST_CREDITED, K_LAST_IDX].forEach(k => localStorage.removeItem(k));
-};
-const todayStr    = () => { const d=new Date(); return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
-
-// 経過日数を計算して引ける回数を付与する
-function daysBetween(a, b) {
-  const d1 = new Date(a); const d2 = new Date(b);
-  d1.setHours(0,0,0,0); d2.setHours(0,0,0,0);
-  return Math.round((d2 - d1) / 86400000);
-}
-function creditPendingPulls() {
-  const today = todayStr();
-  const last  = localStorage.getItem(K_LAST_CREDITED);
-  if (!last) {
-    // 初回起動：今日の1回を付与
-    setPending(getPending() + 1);
-    localStorage.setItem(K_LAST_CREDITED, today);
-  } else {
-    const diff = daysBetween(last, today);
-    if (diff > 0) {
-      setPending(getPending() + diff);
-      localStorage.setItem(K_LAST_CREDITED, today);
-    }
-  }
-}
-
-/* =============================================
-   PHOTO LIST
-============================================= */
-let photoList = [];
-
-async function loadPhotos(){
-  try {
-    const r = await fetch('photos.json?v=' + Date.now());
-    if (!r.ok) throw 0;
-    const raw = await r.json();
-    // Support both ["file.jpg"] and [{"file":"file.jpg","note":"..."}]
-    photoList = raw.map(item => typeof item === 'string' ? { file: item, note: '' } : item);
-  } catch {
-    photoList = [
-      { file: '__demo__', note: '' },
-      { file: '__demo__', note: '' },
-      { file: '__demo__', note: '' },
-      { file: '__demo__', note: '' },
-      { file: '__demo__', note: '' },
-      { file: '__demo__', note: '' },
-    ];
-    console.info('デモモードで動作中');
-  }
-}
-
-function getComment(idx) {
-  const local = getComments()[idx];
-  if (local !== undefined) return local;
-  return photoList[idx]?.note || '';
-}
-
-function pickRandom(){
-  if (!photoList.length) return null;
-  const pulled = getPulled();
-  const allIdx = photoList.map((_,i) => i);
-  const unPulled = allIdx.filter(i => !pulled.includes(i));
-  const candidates = unPulled.length ? unPulled : allIdx;
-  return candidates[Math.floor(Math.random() * candidates.length)];
-}
-
-/* =============================================
-   SHOW PHOTO
-============================================= */
-let currentPhotoIdx = null;
-
-function showPhoto(idx, animate = true){
-  currentPhotoIdx = idx;
-  const stage   = document.getElementById('photo-stage');
-  const img     = document.getElementById('photo-img');
-  const demo    = document.getElementById('photo-demo');
-  const meta    = document.getElementById('photo-meta');
-  const comment = document.getElementById('photo-comment');
-  const sharBtn = document.getElementById('share-line');
-  const item    = photoList[idx];
-  const isDemo  = !item || item.file === '__demo__';
-
-  if (isDemo) { img.style.display='none'; demo.style.display='flex'; }
-  else { img.src=`photos/${item.file}`; img.style.display='block'; demo.style.display='none'; }
-
-  meta.textContent = `思い出 ${idx+1} / ${photoList.length}`;
-  comment.textContent = getComment(idx);
-  sharBtn.classList.add('show');
-
-  if (animate) {
-    stage.classList.remove('show');
-    requestAnimationFrame(() => stage.classList.add('show'));
-  } else {
-    stage.classList.add('show');
-  }
-}
-
-/* =============================================
-   COLLECTION GRID + PROGRESS BAR
-============================================= */
-let unlockedIdxList = [];
-
+/* COLLECTION */
+let unlockedIdxList=[];
 function renderCollection(){
-  const grid   = document.getElementById('collection-grid');
-  const pulled = getPulled();
-  unlockedIdxList = photoList.map((_,i) => i).filter(i => pulled.includes(i));
-
-  // Progress bar
-  const total = photoList.length;
-  const count = unlockedIdxList.length;
-  document.getElementById('progress-text').textContent = `${count} / ${total} 枚`;
-  const pct = total > 0 ? (count / total * 100) : 0;
-  document.getElementById('progress-fill').style.width = pct + '%';
-
-  grid.innerHTML = '';
-  if (!photoList.length) {
-    grid.innerHTML = '<p style="text-align:center;color:var(--dim);font-size:13px;grid-column:1/-1;padding:24px 0">写真が登録されていません</p>';
-    return;
-  }
-
-  photoList.forEach((item, i) => {
-    const el = document.createElement('div');
-    const isUnlocked = pulled.includes(i);
-    el.className = 'col-item ' + (isUnlocked ? 'unlocked' : 'locked');
-    el.dataset.idx = i;
-
-    if (isUnlocked) {
-      // 画像エリア（正方形）
-      const wrap = document.createElement('div'); wrap.className = 'col-img-wrap';
-      const isDemo = !item || item.file === '__demo__';
-      if (isDemo) {
-        const d = document.createElement('div'); d.className = 'col-demo'; d.textContent = '📷';
-        wrap.appendChild(d);
-      } else {
-        const img = document.createElement('img'); img.src = `photos/${item.file}`; img.alt = '思い出';
-        wrap.appendChild(img);
-      }
-      const ov = document.createElement('div'); ov.className = 'col-overlay';
-      ov.innerHTML = '<span class="col-overlay-text">💕 タップで大きく見る</span>';
-      wrap.appendChild(ov);
+  const grid=document.getElementById('collection-grid'),pulled=getPulled();
+  unlockedIdxList=photoList.map((_,i)=>i).filter(i=>pulled.includes(i));
+  const total=photoList.length,unlocked=unlockedIdxList.length;
+  document.getElementById('progress-text').textContent=`${unlocked} / ${total} 枚`;
+  document.getElementById('progress-fill').style.width=total>0?`${(unlocked/total)*100}%`:'0%';
+  grid.innerHTML='';
+  if(!photoList.length){grid.innerHTML='<p style="text-align:center;color:var(--dim);font-size:13px;grid-column:1/-1;padding:24px 0">写真が登録されていません</p>';return;}
+  photoList.forEach((item,i)=>{
+    const el=document.createElement('div'),isUnlocked=pulled.includes(i);
+    el.className='col-item '+(isUnlocked?'unlocked':'locked');
+    if(isUnlocked){
+      const wrap=document.createElement('div');wrap.className='col-img-wrap';
+      const isDemo=!item||item.file==='__demo__';
+      if(isDemo){const d=document.createElement('div');d.className='col-demo';d.textContent='📷';wrap.appendChild(d);}
+      else{const img=document.createElement('img');img.src=`photos/${item.file}`;img.alt='思い出';wrap.appendChild(img);}
+      const ov=document.createElement('div');ov.className='col-overlay';ov.innerHTML='<span class="col-overlay-text">💕 タップして大きく見る</span>';wrap.appendChild(ov);
       el.appendChild(wrap);
-
-      // コメントエリア（画像の下）
-      const ca = document.createElement('div'); ca.className = 'col-comment-area';
-      const c = getComment(i);
-      ca.textContent = c;
-      if (c) ca.classList.add('has-comment');
-      el.appendChild(ca);
-
-      el.addEventListener('click', () => openLightbox(i));
-    } else {
-      el.innerHTML = `<div class="lock-icon">🔒</div><div class="lock-num">${i+1}</div>`;
-    }
+      const ca=document.createElement('div'),c=getComment(i);ca.className='col-comment-area'+(c?' has-comment':'');ca.textContent=c||'';el.appendChild(ca);
+      el.addEventListener('click',()=>openLightbox(i));
+    }else{el.innerHTML=`<div class="lock-icon">🔒</div><div class="lock-num">${i+1}</div>`;}
     grid.appendChild(el);
   });
 }
 
-/* =============================================
-   LIGHTBOX + SWIPE
-============================================= */
-let lbCurrentIdx = null;
-let lbTouchStartX = 0;
-
-function saveLbComment(){
-  if (lbCurrentIdx === null) return;
-  const input = document.getElementById('lb-comment-input');
-  const val = input.value.trim();
-  const comments = getComments();
-  comments[lbCurrentIdx] = val;
-  setComments(comments);
-  // ガチャ結果のポラロイドに反映
-  if (currentPhotoIdx === lbCurrentIdx) {
-    document.getElementById('photo-comment').textContent = val;
-  }
-  // ギャラリーのコメントエリアに反映
-  const ca = document.querySelector(`.col-item[data-idx="${lbCurrentIdx}"] .col-comment-area`);
-  if (ca) {
-    ca.textContent = val;
-    ca.classList.toggle('has-comment', val.length > 0);
-  }
-}
-
-function openLightbox(idx){
-  lbCurrentIdx = idx; renderLightbox();
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeLightbox(){
-  saveLbComment();
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow = '';
-  lbCurrentIdx = null;
-}
-function renderLightbox(){
-  const img   = document.getElementById('lb-img');
-  const demo  = document.getElementById('lb-demo');
-  const input = document.getElementById('lb-comment-input');
-  const item  = photoList[lbCurrentIdx];
-  const isDemo = !item || item.file === '__demo__';
-
-  if (isDemo) { img.style.display='none'; demo.style.display='flex'; }
-  else { img.src=`photos/${item.file}`; img.style.display='block'; demo.style.display='none'; }
-  input.value = getComment(lbCurrentIdx);
-}
-function lbNavigate(dir){
-  if (lbCurrentIdx === null || !unlockedIdxList.length) return;
-  saveLbComment(); // 移動前に保存
-  const pos = (unlockedIdxList.indexOf(lbCurrentIdx) + dir + unlockedIdxList.length) % unlockedIdxList.length;
-  lbCurrentIdx = unlockedIdxList[pos]; renderLightbox();
-}
-
-// コメント入力：Enterで確定、フォーカスを外したときも保存、リアルタイムでポラロイドに反映
-const lbCommentInput = document.getElementById('lb-comment-input');
-lbCommentInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { lbCommentInput.blur(); }
-});
-lbCommentInput.addEventListener('blur', saveLbComment);
-lbCommentInput.addEventListener('input', () => {
-  const val = lbCommentInput.value;
-  // ガチャ結果のポラロイドにリアルタイム反映
-  if (currentPhotoIdx !== null && currentPhotoIdx === lbCurrentIdx) {
-    document.getElementById('photo-comment').textContent = val;
-  }
-  // ギャラリーにリアルタイム反映
-  const ca = document.querySelector(`.col-item[data-idx="${lbCurrentIdx}"] .col-comment-area`);
-  if (ca) {
-    ca.textContent = val;
-    ca.classList.toggle('has-comment', val.trim().length > 0);
-  }
-});
-
-// Swipe support
-const lightbox = document.getElementById('lightbox');
-lightbox.addEventListener('touchstart', e => { lbTouchStartX = e.touches[0].clientX; }, { passive: true });
-lightbox.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - lbTouchStartX;
-  if (Math.abs(dx) > 50) lbNavigate(dx < 0 ? 1 : -1);
-});
-
-document.getElementById('lb-close').addEventListener('click', closeLightbox);
-document.getElementById('lb-prev').addEventListener('click', () => lbNavigate(-1));
-document.getElementById('lb-next').addEventListener('click', () => lbNavigate(1));
-lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
-document.addEventListener('keydown', e => {
-  if (!lightbox.classList.contains('open')) return;
-  if (e.key === 'Escape') closeLightbox();
-  if (e.key === 'ArrowLeft') lbNavigate(-1);
-  if (e.key === 'ArrowRight') lbNavigate(1);
-});
-
-/* =============================================
-   LINE SHARE
-============================================= */
-document.getElementById('share-line').addEventListener('click', () => {
-  if (currentPhotoIdx === null) return;
-  const comment = getComment(currentPhotoIdx);
-  let text = `🎀 夏希との思い出 No.${currentPhotoIdx + 1}`;
-  if (comment) text += `\n"${comment}"`;
-  text += '\n\n誕生日カウントダウンガチャより 💕';
-  window.open('https://line.me/R/msg/text/?' + encodeURIComponent(text), '_blank');
-});
-
-/* =============================================
-   CONFETTI & SPARKLES
-============================================= */
-function launchConfetti(count = 80){
-  const colors = ['#f472b6','#fba8d0','#fce7f3','#fb7185','#ffffff','#f9a8d4','#fbcfe8'];
-  for (let i = 0; i < count; i++) {
-    const el = document.createElement('div'); el.className = 'confetti-piece';
-    const sz = 6 + Math.random() * 9;
-    el.style.cssText = `left:${Math.random()*100}vw;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()<.6?'50%':'2px'};animation-duration:${2.4+Math.random()*2}s;animation-delay:${Math.random()*.7}s;`;
-    document.body.appendChild(el);
-    el.addEventListener('animationend', () => el.remove());
-  }
-}
-
-function launchSparkles(){
-  const colors = ['#f472b6','#fce7f3','#d4a84c','#fba8d0','#ffffff'];
-  const capsule = document.getElementById('capsule-svg');
-  const rect = capsule.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-
-  for (let i = 0; i < 24; i++) {
-    const el = document.createElement('div'); el.className = 'sparkle';
-    const sz = 4 + Math.random() * 8;
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 60 + Math.random() * 120;
-    const tx = Math.cos(angle) * dist;
-    const ty = Math.sin(angle) * dist;
-    const dur = (0.4 + Math.random() * 0.5) + 's';
-    el.style.cssText = `
-      left:${cx - sz/2}px; top:${cy - sz/2}px;
-      width:${sz}px; height:${sz}px;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      --tx:${tx}px; --ty:${ty}px; --dur:${dur};
-    `;
-    document.body.appendChild(el);
-    el.addEventListener('animationend', () => el.remove());
-  }
-}
-
-/* =============================================
-   GACHA (3-step animation)
-============================================= */
-const btn      = document.getElementById('gacha-btn');
-const capsule  = document.getElementById('capsule-svg');
-const statusEl = document.getElementById('status-msg');
-
-function updatePullStatus() {
-  const p = getPending();
-  if (p <= 0) {
-    btn.disabled = true;
-    statusEl.innerHTML = '今日の思い出は開いたよ 💕<br><small style="font-size:11px;opacity:0.6">また明日ね 🎀</small>';
-  } else {
-    btn.disabled = false;
-    statusEl.innerHTML = p > 1
-      ? `<span style="color:var(--pink-l);font-family:'Zen Kurenaido',cursive">${p} 回分の思い出が待ってるよ 🎀</span>`
-      : '';
-  }
-}
-function resetGachaUI(){
-  document.getElementById('gacha-machine').style.display = 'flex';
-  capsule.className = '';
-  document.getElementById('photo-stage').classList.remove('show');
-  document.getElementById('share-line').classList.remove('show');
-  currentPhotoIdx = null;
-  updatePullStatus();
-}
-
-btn.addEventListener('click', () => {
-  if (!photoList.length) { statusEl.textContent = 'まだ写真が登録されていないよ 📷'; return; }
-  if (getPending() <= 0) { updatePullStatus(); return; }
-  btn.disabled = true;
-  statusEl.textContent = '';
-  document.getElementById('gacha-machine').style.display = 'flex';
-
-  // Step 1: Shake (0–600ms)
-  capsule.classList.add('shaking');
-
-  setTimeout(() => {
-    // Step 2: Spin (600–1300ms)
-    capsule.classList.remove('shaking');
-    capsule.classList.add('spinning');
-
-    setTimeout(() => {
-      // Step 3: Glow pulse (1300–1700ms)
-      capsule.classList.remove('spinning');
-      capsule.classList.add('glowing');
-
-      setTimeout(() => {
-        // Step 4: Burst + sparkles
-        capsule.classList.remove('glowing');
-        capsule.classList.add('burst');
-        launchSparkles();
-
-        setTimeout(() => {
-          const idx = pickRandom();
-          if (idx === null) { capsule.classList.remove('burst'); return; }
-          const pulled = getPulled();
-          if (!pulled.includes(idx)) pulled.push(idx);
-          setPulled(pulled);
-          setLastIdx(idx);
-          // 引いた回数を1減らす
-          setPending(getPending() - 1);
-          document.getElementById('gacha-machine').style.display = 'none';
-          capsule.classList.remove('burst');
-          showPhoto(idx, true);
-          launchConfetti();
-          renderCollection();
-          updatePullStatus();
-        }, 450);
-      }, 400);
-    }, 700);
-  }, 600);
-});
-
-/* =============================================
-   BIRTHDAY SPECIAL MODE
-============================================= */
-function checkBirthday(){
-  const { isToday } = getBirthdayInfo();
-  if (!isToday) return;
-
-  // Unlock all photos
-  const allIdx = photoList.map((_,i) => i);
-  setPulled(allIdx);
-
-  // Show overlay only once per birthday year
-  const shownYear = localStorage.getItem(K_BD_SHOWN);
-  const thisYear = String(new Date().getFullYear());
-  if (shownYear !== thisYear) {
-    localStorage.setItem(K_BD_SHOWN, thisYear);
-    document.getElementById('birthday-overlay').classList.add('open');
-    launchConfetti(120);
-    // Keep launching confetti for birthday extra joy
-    setTimeout(() => launchConfetti(80), 1500);
-    setTimeout(() => launchConfetti(60), 3000);
-  }
-}
-
-document.getElementById('bd-open-album').addEventListener('click', () => {
-  document.getElementById('birthday-overlay').classList.remove('open');
-  renderCollection();
-});
-
-/* =============================================
-   ADMIN PANEL
-============================================= */
-let footerTapCount = 0, footerTapTimer = null;
-document.getElementById('footer-trigger').addEventListener('click', () => {
-  footerTapCount++;
-  clearTimeout(footerTapTimer);
-  footerTapTimer = setTimeout(() => footerTapCount = 0, 2000);
-  if (footerTapCount >= 5) { footerTapCount = 0; openAdmin(); }
-});
-
-function openAdmin(){
-  updateAdminStatus();
-  document.getElementById('admin-panel').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeAdmin(){
-  document.getElementById('admin-panel').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function updateAdminStatus(){
-  const pulled  = getPulled();
-  const pending = getPending();
-  document.getElementById('st-total').textContent  = `${photoList.length} 枚`;
-  document.getElementById('st-pulled').textContent = `${pulled.length} 枚`;
-  document.getElementById('st-today').textContent  = pending > 0 ? `あと ${pending} 回` : '✅ 全部引いた';
-}
-
-function showAdminToast(msg){
-  const t = document.getElementById('admin-toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2400);
-}
-
-
-// Accordion
-document.querySelectorAll('.accordion-header').forEach(header => {
-  header.addEventListener('click', () => {
-    const target = header.getAttribute('data-target');
-    const body   = document.getElementById(target);
-    const isOpen = body.classList.contains('open');
-    document.querySelectorAll('.accordion-body').forEach(b => b.classList.remove('open'));
-    document.querySelectorAll('.accordion-header').forEach(h => h.classList.remove('open'));
-    if (!isOpen) { body.classList.add('open'); header.classList.add('open'); }
-    updateAdminStatus();
+/* PRESENT GRID */
+function renderPresentGrid(){
+  const opened=getOpened(),wrap=document.getElementById('present-section-wrap'),grid=document.getElementById('present-grid');
+  grid.innerHTML='';
+  if(!opened.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  opened.forEach(p=>{
+    const el=document.createElement('div');el.className='pres-item';
+    el.innerHTML=`<div class="pres-item-icon">🎁</div><div class="pres-item-date">${p.date}</div><div class="pres-item-preview">${p.title||'プレゼント'}</div>`;
+    el.addEventListener('click',()=>openPresLightbox(p));
+    grid.appendChild(el);
   });
-});
+}
+function openPresLightbox(p){
+  document.getElementById('pres-lb-title').textContent=p.title||'プレゼント';
+  document.getElementById('pres-lb-date').textContent=p.date||'';
+  document.getElementById('pres-lb-msg').textContent=p.message||'';
+  const iw=document.getElementById('pres-lb-img-wrap'),ii=document.getElementById('pres-lb-img');
+  if(p.image){iw.style.display='block';ii.src=`photos/${p.image}`;}else{iw.style.display='none';}
+  document.getElementById('pres-lightbox').classList.add('open');document.body.style.overflow='hidden';
+}
+document.getElementById('pres-lb-close').addEventListener('click',()=>{document.getElementById('pres-lightbox').classList.remove('open');document.body.style.overflow='';});
+document.getElementById('pres-lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('pres-lightbox')){document.getElementById('pres-lightbox').classList.remove('open');document.body.style.overflow='';}});
 
-document.getElementById('btn-reset-today').addEventListener('click', () => {
-  setPending(getPending() + 1);
-  resetGachaUI(); updateAdminStatus();
-  showAdminToast(`✅ ガチャを1回追加しました（合計 ${getPending()} 回）`);
-});
-document.getElementById('btn-reset-all').addEventListener('click', () => {
-  if (!confirm('全ての引いた記録を消しますか？\nアルバムも全部ロックに戻ります。')) return;
-  clearAll(); resetGachaUI(); renderCollection(); updateAdminStatus();
-  showAdminToast('🗑 全履歴をリセットしました');
-});
-document.getElementById('btn-unlock-all').addEventListener('click', () => {
-  const all = photoList.map((_,i) => i);
-  setPulled(all); renderCollection(); updateAdminStatus();
-  showAdminToast('🔓 全写真を解放しました 🎉');
-});
-
-document.getElementById('admin-close').addEventListener('click', closeAdmin);
-document.getElementById('admin-panel').addEventListener('click', e => {
-  if (e.target === document.getElementById('admin-panel')) closeAdmin();
-});
+/* LIGHTBOX */
+let lbCurrentIdx=null;
+function openLightbox(idx){lbCurrentIdx=idx;renderLightbox();document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';}
+function closeLightbox(){saveComment(lbCurrentIdx);document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';lbCurrentIdx=null;}
+function renderLightbox(){
+  const img=document.getElementById('lb-img'),demo=document.getElementById('lb-demo');
+  const item=photoList[lbCurrentIdx],isDemo=!item||item.file==='__demo__';
+  if(isDemo){img.style.display='none';demo.style.display='flex';}else{img.src=`photos/${item.file}`;img.style.display='block';demo.style.display='none';}
+  document.getElementById('lb-comment-input').value=getComment(lbCurrentIdx);
+}
+function lbNav(dir){saveComment(lbCurrentIdx);const pos=(unlockedIdxList.indexOf(lbCurrentIdx)+dir+unlockedIdxList.length)%unlockedIdxList.length;lbCurrentIdx=unlockedIdxList[pos];renderLightbox();}
+function saveComment(idx){if(idx===null)return;const val=document.getElementById('lb-comment-input').value.trim(),c=getComments();c[idx]=val;setComments(c);renderCollection();if(currentPhotoIdx===idx)document.getElementById('photo-comment').textContent=val;}
+document.getElementById('lb-close').addEventListener('click',closeLightbox);
+document.getElementById('lb-prev').addEventListener('click',()=>lbNav(-1));
+document.getElementById('lb-next').addEventListener('click',()=>lbNav(1));
+document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('lightbox'))closeLightbox();});
+document.addEventListener('keydown',e=>{if(!document.getElementById('lightbox').classList.contains('open'))return;if(e.key==='Escape')closeLightbox();if(e.key==='ArrowLeft')lbNav(-1);if(e.key==='ArrowRight')lbNav(1);});
 
 /* =============================================
-   INIT
+   📥 DOWNLOAD — ライトボックスと同じポラロイドを画像化
 ============================================= */
-async function init(){
-  await loadPhotos();
-  creditPendingPulls();
-  checkBirthday();
+function downloadPolaroid(photoIdx){
+  const item=photoList[photoIdx],isDemo=!item||item.file==='__demo__',comment=getComment(photoIdx);
+  // ライトボックスの実寸に合わせたサイズ
+  const PW=380,PAD=14,BOT=70,imgH=Math.round((PW-PAD*2)*(4/3)),PH=PAD+imgH+BOT;
+  const canvas=document.getElementById('download-canvas');
+  canvas.width=PW;canvas.height=PH;
+  const ctx=canvas.getContext('2d');
 
-  // 毎日のラブメッセージをセット
-  const msgEl = document.getElementById('daily-msg');
-  msgEl.textContent = getTodayLoveMessage();
-  msgEl.style.display = 'block';
+  function drawFrame(photoImg){
+    // 白背景
+    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,PW,PH);
+    const px=PAD,py=PAD,pw=PW-PAD*2,ph=imgH;
 
-  // 最後に引いた写真を表示（あれば）
-  const lastIdx = getLastIdx();
-  if (lastIdx !== null && photoList[lastIdx] !== undefined) {
-    showPhoto(lastIdx, false);
+    if(photoImg){
+      // アスペクト比を保ちつつ中央クロップ
+      const sw=photoImg.naturalWidth,sh=photoImg.naturalHeight;
+      const tr=pw/ph,sr=sw/sh;
+      let sx=0,sy=0,sW=sw,sH=sh;
+      if(sr>tr){sW=sh*tr;sx=(sw-sW)/2;}else{sH=sw/tr;sy=(sh-sH)/2;}
+      ctx.drawImage(photoImg,sx,sy,sW,sH,px,py,pw,ph);
+    }else{
+      const grd=ctx.createLinearGradient(px,py,px+pw,py+ph);
+      grd.addColorStop(0,'#fce7f3');grd.addColorStop(1,'#f9a8d4');
+      ctx.fillStyle=grd;ctx.fillRect(px,py,pw,ph);
+      ctx.font='52px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('📷',PW/2,py+ph/2);
+    }
+
+    // ハート（ライトボックスと同じ位置・サイズ）
+    const midY=py+ph;
+    ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('💕',PW/2,midY+BOT*0.36);
+
+    // コメント
+    if(comment){
+      ctx.fillStyle='#a0507a';
+      ctx.font=`500 ${comment.length>16?13:15}px 'Noto Serif JP',sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(comment,PW/2,midY+BOT*0.72);
+    }
+
+    // 薄いボーダー
+    ctx.strokeStyle='rgba(244,114,182,0.12)';ctx.lineWidth=1;ctx.strokeRect(1,1,PW-2,PH-2);
   }
 
-  updatePullStatus();
-  renderCollection();
+  if(isDemo){drawFrame(null);triggerDL(canvas,`cheki_${photoIdx+1}.png`);return;}
+  const img=new Image();
+  img.crossOrigin='anonymous';
+  img.onload=()=>{drawFrame(img);triggerDL(canvas,`cheki_${photoIdx+1}.png`);};
+  img.onerror=()=>{drawFrame(null);triggerDL(canvas,`cheki_${photoIdx+1}.png`);};
+  img.src=`photos/${item.file}`;
 }
+function triggerDL(canvas,name){canvas.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);},'image/png');}
+document.getElementById('download-btn').addEventListener('click',()=>{if(currentPhotoIdx!==null)downloadPolaroid(currentPhotoIdx);});
+document.getElementById('lb-download-btn').addEventListener('click',()=>{if(lbCurrentIdx!==null){saveComment(lbCurrentIdx);downloadPolaroid(lbCurrentIdx);}});
+
+/* CONFETTI */
+function launchConfetti(n=80){
+  const colors=['#f472b6','#fba8d0','#fce7f3','#fb7185','#ffffff','#f0cc78','#fbcfe8'];
+  for(let i=0;i<n;i++){const el=document.createElement('div');el.className='confetti-piece';const sz=6+Math.random()*9;el.style.cssText=`left:${Math.random()*100}vw;width:${sz}px;height:${sz}px;background:${colors[~~(Math.random()*colors.length)]};border-radius:${Math.random()<.6?'50%':'2px'};animation-duration:${2.4+Math.random()*2}s;animation-delay:${Math.random()*.7}s;`;document.body.appendChild(el);el.addEventListener('animationend',()=>el.remove());}
+}
+
+/* =============================================
+   🎁 PRESENT BOX
+============================================= */
+let presentBgRaf=null;
+function startPresentBg(){
+  const canvas=document.getElementById('present-bg-canvas'),cx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  let particles=[],timer=0;
+  function burst(){
+    const bx=Math.random()*canvas.width,by=Math.random()*canvas.height*0.65;
+    const cols=['#f472b6','#fba8d0','#f0cc78','#fce7f3','#fb7185','#d4a84c'];
+    for(let i=0;i<22;i++){const a=Math.random()*Math.PI*2,sp=1.5+Math.random()*4;particles.push({x:bx,y:by,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2.5,color:cols[~~(Math.random()*cols.length)],life:1,size:3+Math.random()*5});}
+  }
+  function frame(){
+    cx.clearRect(0,0,canvas.width,canvas.height);timer++;if(timer%35===0)burst();
+    for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.1;p.life-=0.016;if(p.life<=0){particles.splice(i,1);continue;}cx.globalAlpha=p.life;cx.fillStyle=p.color;cx.beginPath();cx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2);cx.fill();}
+    cx.globalAlpha=1;presentBgRaf=requestAnimationFrame(frame);
+  }
+  frame();
+}
+function stopPresentBg(){cancelAnimationFrame(presentBgRaf);}
+
+function getTodayPresent(){return PRESENT_SCHEDULE.find(p=>p.date===todayStr())||null;}
+
+function showPresentOverlay(pData){
+  const overlay=document.getElementById('present-overlay'),phBox=document.getElementById('present-phase-box'),phReveal=document.getElementById('present-phase-reveal'),box=document.getElementById('present-box-svg');
+  phBox.style.display='flex';phReveal.style.display='none';box.className='';box.style.opacity='1';
+  overlay.classList.add('open');document.body.style.overflow='hidden';
+  let shakeInt=setInterval(()=>{box.classList.add('shake-box');setTimeout(()=>box.classList.remove('shake-box'),500);},2200);
+
+  function openBox(){
+    clearInterval(shakeInt);
+    document.getElementById('present-box-wrap').removeEventListener('click',openBox);
+    box.classList.add('open-burst');
+    launchConfetti(130);startPresentBg();
+    setTimeout(()=>{
+      phBox.style.display='none';
+      document.getElementById('present-reveal-title').textContent=pData.title||'プレゼント 🎁';
+      document.getElementById('present-reveal-msg').textContent=pData.message||'';
+      const iw=document.getElementById('present-reveal-img-wrap'),ri=document.getElementById('present-reveal-img');
+      if(pData.image){iw.style.display='block';ri.src=`photos/${pData.image}`;}else{iw.style.display='none';}
+      phReveal.style.display='flex';
+      const opened=getOpened();
+      if(!opened.find(p=>p.date===pData.date)){opened.push({date:pData.date,title:pData.title||'プレゼント',message:pData.message||'',image:pData.image||''});setOpened(opened);renderPresentGrid();}
+      updateAdminStatus();
+      setTimeout(()=>launchConfetti(80),700);setTimeout(()=>launchConfetti(60),1500);
+    },700);
+  }
+  document.getElementById('present-box-wrap').addEventListener('click',openBox);
+}
+document.getElementById('present-reveal-close').addEventListener('click',()=>{stopPresentBg();document.getElementById('present-overlay').classList.remove('open');document.body.style.overflow='';});
+
+/* GACHA */
+const btn=document.getElementById('gacha-btn'),capsule=document.getElementById('capsule-svg'),statusEl=document.getElementById('status-msg');
+function setAlreadyUI(){btn.disabled=true;statusEl.innerHTML=`今日の思い出を開いたよ 💕<br><small style="font-size:11px;opacity:0.6">また明日ね 🎀  残り${getPending()}回</small>`;}
+function resetGachaUI(){btn.disabled=false;capsule.style.visibility='visible';capsule.className='';statusEl.textContent='';document.getElementById('photo-stage').classList.remove('show');document.getElementById('download-btn').classList.remove('show');document.getElementById('share-line').classList.remove('show');}
+
+async function init(){
+  await loadPhotos();creditPulls();
+  document.getElementById('daily-msg').textContent=getLoveMsg();
+  const{isToday}=getBD();
+  if(isToday){const shown=localStorage.getItem(K_BD_SHOWN),today=todayStr();if(shown!==today){document.getElementById('birthday-overlay').classList.add('open');document.body.style.overflow='hidden';}}
+  document.getElementById('bd-open-album').addEventListener('click',()=>{document.getElementById('birthday-overlay').classList.remove('open');document.body.style.overflow='';localStorage.setItem(K_BD_SHOWN,todayStr());});
+  if(getPending()<=0){btn.disabled=true;statusEl.innerHTML=`今日の思い出はもう開いたよ 💕<br><small style="font-size:11px;opacity:0.6">また明日ね 🎀</small>`;const lastIdx=getLastIdx();if(lastIdx!==null&&photoList[lastIdx])showPhoto(lastIdx,false);}
+  renderCollection();renderPresentGrid();updateAdminStatus();
+}
+
+btn.addEventListener('click',()=>{
+  if(!photoList.length){statusEl.textContent='まだ写真が登録されていないよ 📷';return;}
+  if(getPending()<=0)return;
+  btn.disabled=true;statusEl.textContent='';
+  capsule.classList.add('shaking');
+  setTimeout(()=>{capsule.classList.remove('shaking');capsule.classList.add('spinning');
+    setTimeout(()=>{capsule.classList.remove('spinning');capsule.classList.add('glowing');
+      setTimeout(()=>{capsule.classList.remove('glowing');capsule.classList.add('burst');
+        setTimeout(()=>{
+          const idx=pickRandom();if(idx===null){capsule.classList.remove('burst');return;}
+          const pulled=getPulled();if(!pulled.includes(idx))pulled.push(idx);setPulled(pulled);
+          setPending(Math.max(0,getPending()-1));setLastIdx(idx);
+          capsule.style.visibility='hidden';capsule.classList.remove('burst');
+          setAlreadyUI();showPhoto(idx,true);launchConfetti();renderCollection();
+          const present=getTodayPresent();
+          if(present){const opened=getOpened();if(!opened.find(p=>p.date===present.date)){setTimeout(()=>showPresentOverlay(present),1800);}}
+        },450);},400);},600);},600);
+});
+
+document.getElementById('share-line').addEventListener('click',()=>{window.open(`https://line.me/R/msg/text/?${encodeURIComponent('夏希との思い出ガチャ、今日も引いたよ 💕\nhttps://haruki-cpu.github.io/happybirthday')}`,'_blank');});
+
+/* ADMIN */
+let ftCount=0,ftTimer=null;
+document.getElementById('footer-trigger').addEventListener('click',()=>{ftCount++;clearTimeout(ftTimer);ftTimer=setTimeout(()=>ftCount=0,2000);if(ftCount>=5){ftCount=0;openAdmin();}});
+function openAdmin(){updateAdminStatus();document.getElementById('admin-panel').classList.add('open');document.body.style.overflow='hidden';}
+function closeAdmin(){document.getElementById('admin-panel').classList.remove('open');document.body.style.overflow='';}
+function updateAdminStatus(){document.getElementById('st-total').textContent=`${photoList.length} 枚`;document.getElementById('st-pulled').textContent=`${getPulled().length} 枚`;document.getElementById('st-today').textContent=`${getPending()} 回`;document.getElementById('st-presents').textContent=`${getOpened().length} 件`;}
+function toast(msg){const t=document.getElementById('admin-toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+document.querySelectorAll('.accordion-header').forEach(h=>{h.addEventListener('click',()=>{const t=h.getAttribute('data-target'),b=document.getElementById(t),o=b.classList.contains('open');document.querySelectorAll('.accordion-body').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.accordion-header').forEach(x=>x.classList.remove('open'));if(!o){b.classList.add('open');h.classList.add('open');if(t==='acc-present-admin')updatePresentTestSelect();}updateAdminStatus();});});
+document.getElementById('btn-reset-today').addEventListener('click',()=>{setPending(getPending()+1);resetGachaUI();updateAdminStatus();toast('✅ ガチャを1回追加しました');});
+document.getElementById('btn-reset-all').addEventListener('click',()=>{if(!confirm('全ての引いた記録を消しますか？'))return;clearAll();resetGachaUI();creditPulls();renderCollection();updateAdminStatus();toast('🗑 全履歴をリセットしました');});
+document.getElementById('btn-unlock-all').addEventListener('click',()=>{setPulled(photoList.map((_,i)=>i));renderCollection();updateAdminStatus();toast('🔓 全写真を解放しました 🎉');});
+document.getElementById('btn-reset-presents').addEventListener('click',()=>{if(!confirm('プレゼントの開封記録をリセットしますか？'))return;localStorage.removeItem(K_OPENED);renderPresentGrid();updateAdminStatus();toast('🔄 プレゼント記録をリセットしました');});
+
+// プレゼントテスト用セレクト更新
+function updatePresentTestSelect(){
+  const sel=document.getElementById('present-test-select');
+  sel.innerHTML='';
+  if(!PRESENT_SCHEDULE.length){sel.innerHTML='<option value="">（登録なし）</option>';return;}
+  PRESENT_SCHEDULE.forEach((p,i)=>{const opt=document.createElement('option');opt.value=i;opt.textContent=`${p.date}　${p.title||'プレゼント'}`;sel.appendChild(opt);});
+}
+document.getElementById('btn-test-present').addEventListener('click',()=>{
+  const sel=document.getElementById('present-test-select');
+  const idx=parseInt(sel.value);
+  if(isNaN(idx)||!PRESENT_SCHEDULE[idx]){toast('⚠ プレゼントが選択されていません');return;}
+  closeAdmin();
+  setTimeout(()=>showPresentOverlay(PRESENT_SCHEDULE[idx]),300);
+});
+document.getElementById('admin-close').addEventListener('click',closeAdmin);
+document.getElementById('admin-panel').addEventListener('click',e=>{if(e.target===document.getElementById('admin-panel'))closeAdmin();});
 
 init();
 </script>

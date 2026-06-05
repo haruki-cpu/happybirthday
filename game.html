@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ハートフラッピー 💕</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1a0a14;
+  --pink: #f472b6;
+  --pink-l: #fba8d0;
+  --gold: #d4a84c;
+  --gold-l: #f0cc78;
+  --cream: #fdf0f5;
+  --text: #fce7f3;
+  --dim: rgba(252,231,243,0.45);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);}
+body{font-family:'Zen Kurenaido',cursive;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;}
+
+/* ===== CANVAS WRAPPER ===== */
+#game-wrap{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  width:100%;height:100%;
+  max-width:480px;
+}
+
+/* トップバー */
+#top-bar{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 16px;z-index:20;
+}
+#back-btn{
+  background:rgba(244,114,182,0.12);border:1px solid rgba(244,114,182,0.3);
+  border-radius:999px;color:var(--pink-l);padding:7px 16px;
+  font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:1px;
+  cursor:pointer;text-decoration:none;transition:background 0.2s;
+}
+#back-btn:hover{background:rgba(244,114,182,0.22);}
+#score-display{
+  font-size:13px;color:var(--gold-l);letter-spacing:2px;
+  text-shadow:0 0 12px rgba(212,168,76,0.5);
+}
+
+/* ゲームキャンバス */
+#game-canvas{
+  position:absolute;inset:0;width:100%;height:100%;
+  display:block;
+}
+
+/* ===== OVERLAYS ===== */
+.overlay{
+  position:absolute;inset:0;z-index:30;
+  background:rgba(10,2,8,0.88);backdrop-filter:blur(10px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 24px;text-align:center;
+  animation:fadeIn 0.4s ease;
+}
+.overlay.hidden{display:none;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+.ov-icon{font-size:64px;margin-bottom:16px;animation:heartbeat 1.4s ease-in-out infinite;}
+@keyframes heartbeat{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+.ov-title{font-size:clamp(24px,5vw,36px);color:var(--cream);margin-bottom:8px;text-shadow:0 0 24px rgba(244,114,182,0.5);}
+.ov-sub{font-size:13px;color:var(--dim);letter-spacing:2px;margin-bottom:28px;line-height:1.8;}
+.ov-score{font-size:14px;color:var(--gold-l);letter-spacing:2px;margin-bottom:4px;}
+.ov-best{font-size:12px;color:var(--dim);letter-spacing:1px;margin-bottom:28px;}
+
+/* ゴール達成メッセージ */
+#goal-msg{
+  background:linear-gradient(135deg,rgba(212,168,76,0.15),rgba(244,114,182,0.1));
+  border:1px solid rgba(212,168,76,0.35);border-radius:12px;
+  padding:14px 20px;margin-bottom:20px;
+  font-size:13px;color:var(--gold-l);letter-spacing:1px;line-height:1.8;
+  display:none;
+}
+
+.play-btn{
+  background:linear-gradient(135deg,#e879a0,#f9a8d4,#e879a0);
+  color:white;border:none;border-radius:999px;
+  padding:16px 52px;font-family:'Zen Kurenaido',cursive;
+  font-size:17px;letter-spacing:3px;cursor:pointer;
+  box-shadow:0 4px 24px rgba(232,121,160,0.5);
+  transition:transform 0.15s,box-shadow 0.15s;
+  position:relative;overflow:hidden;
+}
+.play-btn::after{content:'';position:absolute;top:-60%;left:-60%;width:220%;height:220%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,0.4) 50%,transparent 65%);animation:shine 3s linear infinite;}
+@keyframes shine{from{transform:translateX(-100%) rotate(20deg);}to{transform:translateX(100%) rotate(20deg);}}
+.play-btn:hover{transform:translateY(-3px);box-shadow:0 10px 36px rgba(232,121,160,0.7);}
+
+.goal-hint{font-size:11px;color:var(--dim);margin-top:14px;letter-spacing:1px;line-height:1.8;}
+
+/* CONFETTI */
+.confetti-piece{position:fixed;top:-14px;pointer-events:none;z-index:999;animation:confettiFall linear forwards;}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}80%{opacity:1;}100%{transform:translateY(108vh) rotate(900deg);opacity:0;}}
+</style>
+</head>
+<body>
+<div id="game-wrap">
+  <div id="top-bar">
+    <a id="back-btn" href="index.html">← もどる</a>
+    <div id="score-display">⭐ 0 / 50</div>
+  </div>
+
+  <canvas id="game-canvas"></canvas>
+
+  <!-- START OVERLAY -->
+  <div class="overlay" id="overlay-start">
+    <div class="ov-icon">💕</div>
+    <div class="ov-title">ハートフラッピー</div>
+    <div class="ov-sub">タップ or スペースキーで<br>ハートをはばたかせて 🎀<br>リボンの障害物をよけてね！</div>
+    <div class="goal-hint">🏆 ゴール：50個の障害物を超えたら<br>スペシャルプレゼントが出現！</div>
+    <br>
+    <button class="play-btn" id="btn-start">はじめる 💕</button>
+  </div>
+
+  <!-- GAMEOVER OVERLAY -->
+  <div class="overlay hidden" id="overlay-gameover">
+    <div class="ov-icon">💔</div>
+    <div class="ov-title">ゲームオーバー</div>
+    <div class="ov-score" id="go-score">スコア：0</div>
+    <div class="ov-best" id="go-best">ベスト：0</div>
+    <div id="goal-msg">🎁 ゴール達成！プレゼントを見てね！</div>
+    <button class="play-btn" id="btn-retry">もう一度 💕</button>
+    <div class="goal-hint" id="go-hint">あと<span id="go-remain">50</span>個で<br>プレゼントが出るよ！</div>
+  </div>
+
+  <!-- CLEAR OVERLAY -->
+  <div class="overlay hidden" id="overlay-clear">
+    <div class="ov-icon" style="animation:none;font-size:80px">🎁</div>
+    <div class="ov-title" style="color:var(--gold-l);text-shadow:0 0 30px rgba(212,168,76,0.7)">ゴール達成！🎉</div>
+    <div class="ov-sub">50個突破おめでとう！<br>夏希はすごい！！！</div>
+    <div style="background:linear-gradient(135deg,rgba(212,168,76,0.15),rgba(244,114,182,0.1));border:1px solid rgba(212,168,76,0.3);border-radius:14px;padding:20px 24px;margin-bottom:24px;max-width:300px;">
+      <div style="font-size:14px;color:var(--gold-l);letter-spacing:2px;margin-bottom:10px">🎀 スペシャルメッセージ 🎀</div>
+      <div style="font-size:14px;color:var(--text);line-height:2.2;opacity:0.92" id="clear-message">夏希のことが大好きだよ！！💕<br>これからもずっと一緒にいようね 🎂</div>
+    </div>
+    <button class="play-btn" id="btn-play-again">もう一度あそぶ</button>
+  </div>
+</div>
+
+<script>
+/* =============================================
+   SETTINGS
+============================================= */
+const GOAL = 50; // この数の障害物を超えたらクリア
+const CLEAR_MESSAGE = '夏希のことが大好きだよ！！💕\nこれからもずっと一緒にいようね 🎂';
+const BEST_KEY = 'hf_best_v1';
+
+/* =============================================
+   CANVAS SETUP
+============================================= */
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resizeCanvas() {
+  const wrap = document.getElementById('game-wrap');
+  W = canvas.width  = wrap.clientWidth;
+  H = canvas.height = wrap.clientHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', () => { resizeCanvas(); if (state === 'idle' || state === 'dead') drawBackground(); });
+
+/* =============================================
+   GAME STATE
+============================================= */
+let state = 'idle'; // idle | playing | dead | clear
+let score = 0;
+let bestScore = parseInt(localStorage.getItem(BEST_KEY) || '0');
+let goalReached = false;
+let raf = null;
+
+/* =============================================
+   PLAYER (Heart)
+============================================= */
+const GRAVITY    = 0.38;
+const FLAP_VEL   = -7.5;
+const HEART_SIZE = 28;
+
+let player = { x: 0, y: 0, vy: 0, rotation: 0 };
+
+function resetPlayer() {
+  player.x  = W * 0.28;
+  player.y  = H * 0.45;
+  player.vy = 0;
+  player.rotation = 0;
+}
+
+function drawHeartShape(cx_, cy_, size, color, alpha) {
+  ctx.save();
+  ctx.translate(cx_, cy_);
+  ctx.globalAlpha = alpha || 1;
+  ctx.fillStyle = color || '#f472b6';
+  ctx.shadowColor = color || '#f472b6';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  const s = size * 0.5;
+  ctx.moveTo(0, -s * 0.35);
+  ctx.bezierCurveTo( s * 1.1, -s * 0.9,  s * 2.2, s * 0.2,  0, s * 1.4);
+  ctx.bezierCurveTo(-s * 2.2, s * 0.2,  -s * 1.1, -s * 0.9,  0, -s * 0.35);
+  ctx.fill();
+  ctx.restore();
+}
+
+function updatePlayer() {
+  player.vy += GRAVITY;
+  player.y  += player.vy;
+  player.rotation = Math.min(Math.PI * 0.4, Math.max(-Math.PI * 0.35, player.vy * 0.055));
+  // 天井
+  if (player.y - HEART_SIZE * 0.7 < 0) { player.y = HEART_SIZE * 0.7; player.vy = 2; }
+  // 床
+  if (player.y + HEART_SIZE * 0.7 > H) return true; // dead
+  return false;
+}
+
+function flap() { player.vy = FLAP_VEL; spawnFlapParticles(); }
+
+/* =============================================
+   PIPES (Ribbon obstacles)
+============================================= */
+const PIPE_W     = 52;
+const PIPE_GAP   = 170;
+const PIPE_SPEED = 2.8;
+const PIPE_INTERVAL = 88; // フレーム間隔
+
+let pipes = [];
+let pipeTimer = 0;
+
+function spawnPipe() {
+  const minY = H * 0.18;
+  const maxY = H * 0.68;
+  const topH = minY + Math.random() * (maxY - minY);
+  pipes.push({ x: W + PIPE_W, topH, passed: false });
+}
+
+function updatePipes() {
+  pipeTimer++;
+  if (pipeTimer >= PIPE_INTERVAL) { pipeTimer = 0; spawnPipe(); }
+
+  for (let i = pipes.length - 1; i >= 0; i--) {
+    pipes[i].x -= PIPE_SPEED;
+
+    // スコア
+    if (!pipes[i].passed && pipes[i].x + PIPE_W < player.x) {
+      pipes[i].passed = true;
+      score++;
+      updateScoreDisplay();
+      if (score >= GOAL && !goalReached) { goalReached = true; triggerClear(); return; }
+    }
+
+    // 衝突判定
+    if (collidesWithPipe(pipes[i])) return true;
+
+    if (pipes[i].x + PIPE_W < 0) pipes.splice(i, 1);
+  }
+  return false;
+}
+
+function collidesWithPipe(pipe) {
+  const r = HEART_SIZE * 0.55;
+  const px = player.x, py = player.y;
+  if (px + r < pipe.x || px - r > pipe.x + PIPE_W) return false;
+  if (py - r < pipe.topH || py + r > pipe.topH + PIPE_GAP) return true;
+  return false;
+}
+
+/* =============================================
+   DRAW
+============================================= */
+// 背景パーティクル（装飾）
+let bgParticles = [];
+function initBgParticles() {
+  bgParticles = [];
+  for (let i = 0; i < 40; i++) {
+    bgParticles.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.2+0.2, a: Math.random(), da: (Math.random()*0.2+0.05)*(Math.random()<.5?1:-1)/60 });
+  }
+}
+initBgParticles();
+
+function drawBackground() {
+  // グラデ背景
+  const grd = ctx.createLinearGradient(0, 0, 0, H);
+  grd.addColorStop(0, '#1a0a14');
+  grd.addColorStop(0.5, '#2a0d20');
+  grd.addColorStop(1, '#1a0a14');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, H);
+
+  // 星
+  bgParticles.forEach(p => {
+    p.a += p.da; if (p.a > 1 || p.a < 0.05) p.da *= -1;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(252,231,243,${p.a.toFixed(2)})`; ctx.fill();
+  });
+}
+
+function drawPipe(pipe) {
+  const x = pipe.x, tw = PIPE_W;
+
+  // ===== 上パイプ（リボンポール） =====
+  // 本体
+  const topGrd = ctx.createLinearGradient(x, 0, x + tw, 0);
+  topGrd.addColorStop(0, '#d4187a');
+  topGrd.addColorStop(0.4, '#f472b6');
+  topGrd.addColorStop(1, '#c0527a');
+  ctx.fillStyle = topGrd;
+  ctx.beginPath();
+  ctx.roundRect(x, 0, tw, pipe.topH - 4, [0, 0, 6, 6]);
+  ctx.fill();
+  // キャップ
+  const capGrd = ctx.createLinearGradient(x-4, 0, x+tw+4, 0);
+  capGrd.addColorStop(0, '#e8cc78'); capGrd.addColorStop(1, '#c8a040');
+  ctx.fillStyle = capGrd;
+  ctx.beginPath(); ctx.roundRect(x - 5, pipe.topH - 20, tw + 10, 20, 5); ctx.fill();
+  // リボン柄 (水平ストライプ)
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = '#fff';
+  for (let yy = 10; yy < pipe.topH - 22; yy += 18) {
+    ctx.fillRect(x + 2, yy, tw - 4, 8);
+  }
+  ctx.globalAlpha = 1;
+
+  // ===== 下パイプ =====
+  const botY = pipe.topH + PIPE_GAP;
+  ctx.fillStyle = topGrd;
+  ctx.beginPath(); ctx.roundRect(x, botY + 4, tw, H - botY - 4, [6, 6, 0, 0]); ctx.fill();
+  ctx.fillStyle = capGrd;
+  ctx.beginPath(); ctx.roundRect(x - 5, botY, tw + 10, 20, 5); ctx.fill();
+  ctx.globalAlpha = 0.18; ctx.fillStyle = '#fff';
+  for (let yy = botY + 26; yy < H; yy += 18) { ctx.fillRect(x + 2, yy, tw - 4, 8); }
+  ctx.globalAlpha = 1;
+}
+
+function drawPlayer() {
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  ctx.rotate(player.rotation);
+  // 外側グロー
+  ctx.shadowColor = '#f472b6'; ctx.shadowBlur = 18;
+  drawHeartShape(0, 0, HEART_SIZE, '#f472b6');
+  ctx.shadowBlur = 0;
+  // ハイライト
+  drawHeartShape(-HEART_SIZE*0.18, -HEART_SIZE*0.18, HEART_SIZE*0.38, 'rgba(255,255,255,0.35)');
+  ctx.restore();
+}
+
+function drawHUD() {
+  // スコア (左上)
+  ctx.font = `bold 22px 'Zen Kurenaido', cursive`;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillStyle = 'rgba(252,231,243,0.85)';
+  ctx.shadowColor = 'rgba(244,114,182,0.6)'; ctx.shadowBlur = 8;
+  ctx.fillText(`⭐ ${score}`, W * 0.05, H * 0.06);
+  ctx.shadowBlur = 0;
+  // ゴールまで
+  if (score < GOAL) {
+    ctx.font = `12px 'Zen Kurenaido', cursive`;
+    ctx.fillStyle = 'rgba(212,168,76,0.7)';
+    ctx.fillText(`🏆 あと ${GOAL - score}`, W * 0.05, H * 0.06 + 28);
+  }
+}
+
+/* =============================================
+   FLAP PARTICLES
+============================================= */
+let flapParticles = [];
+function spawnFlapParticles() {
+  for (let i = 0; i < 5; i++) {
+    flapParticles.push({
+      x: player.x, y: player.y,
+      vx: (Math.random() - 0.5) * 3,
+      vy: Math.random() * 2 + 1,
+      life: 1, color: Math.random() < 0.5 ? '#f472b6' : '#f0cc78',
+      size: Math.random() * 5 + 3,
+    });
+  }
+}
+function updateAndDrawFlapParticles() {
+  for (let i = flapParticles.length - 1; i >= 0; i--) {
+    const p = flapParticles[i];
+    p.x += p.vx; p.y += p.vy; p.life -= 0.06;
+    if (p.life <= 0) { flapParticles.splice(i, 1); continue; }
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* =============================================
+   GAME LOOP
+============================================= */
+let lastTime = 0;
+function gameLoop(ts) {
+  if (state !== 'playing') return;
+  raf = requestAnimationFrame(gameLoop);
+
+  drawBackground();
+  pipes.forEach(p => drawPipe(p));
+  updateAndDrawFlapParticles();
+  drawPlayer();
+  drawHUD();
+
+  const hitFloor = updatePlayer();
+  const hitPipe  = updatePipes();
+
+  if (hitFloor || hitPipe) {
+    state = 'dead';
+    if (score > bestScore) { bestScore = score; localStorage.setItem(BEST_KEY, bestScore); }
+    showGameOver();
+  }
+}
+
+/* =============================================
+   CLEAR
+============================================= */
+function triggerClear() {
+  state = 'clear';
+  cancelAnimationFrame(raf);
+  launchConfetti();
+  setTimeout(() => launchConfetti(), 600);
+  document.getElementById('clear-message').textContent = CLEAR_MESSAGE;
+  document.getElementById('overlay-clear').classList.remove('hidden');
+}
+
+/* =============================================
+   GAME OVER
+============================================= */
+function showGameOver() {
+  cancelAnimationFrame(raf);
+  document.getElementById('go-score').textContent = `スコア：${score}`;
+  document.getElementById('go-best').textContent  = `ベスト：${bestScore}`;
+  const remain = Math.max(0, GOAL - score);
+  if (goalReached) {
+    document.getElementById('goal-msg').style.display = 'block';
+    document.getElementById('go-hint').style.display  = 'none';
+  } else {
+    document.getElementById('goal-msg').style.display = 'none';
+    document.getElementById('go-hint').style.display  = 'block';
+    document.getElementById('go-remain').textContent  = remain;
+  }
+  document.getElementById('overlay-gameover').classList.remove('hidden');
+}
+
+/* =============================================
+   CONTROLS
+============================================= */
+function startGame() {
+  state = 'playing'; score = 0; goalReached = false; pipes = []; pipeTimer = 60; flapParticles = [];
+  resetPlayer(); updateScoreDisplay();
+  document.getElementById('overlay-start').classList.add('hidden');
+  document.getElementById('overlay-gameover').classList.add('hidden');
+  document.getElementById('overlay-clear').classList.add('hidden');
+  raf = requestAnimationFrame(gameLoop);
+}
+
+function handleInput() {
+  if (state === 'playing') flap();
+  else if (state === 'idle') startGame();
+}
+
+canvas.addEventListener('click', handleInput);
+canvas.addEventListener('touchstart', e => { e.preventDefault(); handleInput(); }, { passive: false });
+document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); handleInput(); } });
+
+document.getElementById('btn-start').addEventListener('click', startGame);
+document.getElementById('btn-retry').addEventListener('click', startGame);
+document.getElementById('btn-play-again').addEventListener('click', startGame);
+
+function updateScoreDisplay() {
+  document.getElementById('score-display').textContent = `⭐ ${score} / ${GOAL}`;
+}
+
+/* =============================================
+   CONFETTI
+============================================= */
+function launchConfetti() {
+  const colors = ['#f472b6','#fba8d0','#fce7f3','#fb7185','#ffffff','#f0cc78','#fbcfe8'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div'); el.className = 'confetti-piece';
+    const sz = 6 + Math.random() * 9;
+    el.style.cssText = `left:${Math.random()*100}vw;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()<.6?'50%':'2px'};animation-duration:${2.4+Math.random()*2}s;animation-delay:${Math.random()*.7}s;`;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+}
+
+/* ===== INITIAL DRAW ===== */
+drawBackground();
+drawHeartShape(W * 0.28, H * 0.45, HEART_SIZE, '#f472b6');
+</script>
+</body>
+</html>
