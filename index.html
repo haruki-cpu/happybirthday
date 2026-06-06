@@ -20,13 +20,12 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);mi
 .header-deco::before,.header-deco::after{content:'';width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--pink),transparent);}
 .header-deco span{font-size:14px;color:var(--pink-l);letter-spacing:2px;}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
-#game-banner{width:100%;max-width:440px;margin-bottom:28px;background:linear-gradient(135deg,rgba(244,114,182,0.12),rgba(212,168,76,0.1));border:1px solid var(--border);border-radius:16px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-decoration:none;transition:transform 0.15s,box-shadow 0.2s;animation:fadeDown 1s 0.1s ease both;}
-#game-banner:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(244,114,182,0.2);}
-.game-banner-left{display:flex;align-items:center;gap:12px;}
-.game-banner-icon{font-size:28px;}
-.game-banner-title{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--cream);letter-spacing:1px;}
-.game-banner-sub{font-size:11px;color:var(--dim);margin-top:2px;}
-.game-banner-arrow{font-size:20px;color:var(--pink-l);opacity:0.7;}
+#games-section{width:100%;max-width:440px;margin-bottom:28px;display:grid;grid-template-columns:1fr 1fr;gap:10px;animation:fadeDown 1s 0.1s ease both;}
+.game-card{background:linear-gradient(135deg,rgba(244,114,182,0.12),rgba(212,168,76,0.1));border:1px solid var(--border);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;transition:transform 0.15s,box-shadow 0.2s;-webkit-tap-highlight-color:transparent;}
+.game-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(244,114,182,0.2);}
+.game-card-icon{font-size:28px;flex-shrink:0;}
+.game-card-title{font-family:'Zen Kurenaido',cursive;font-size:13px;color:var(--cream);letter-spacing:1px;}
+.game-card-sub{font-size:11px;color:var(--dim);margin-top:2px;}
 #daily-msg{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--pink-l);text-align:center;letter-spacing:1px;opacity:0.9;padding:6px 20px 20px;animation:fadeDown 1s 0.1s ease both;line-height:1.8;}
 #countdown-wrap{margin-bottom:48px;animation:fadeDown 1s 0.15s ease both;}
 .cd-label-top{text-align:center;font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:3px;color:var(--pink-l);margin-bottom:16px;opacity:0.8;}
@@ -100,7 +99,7 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);mi
 .col-overlay{position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(180,60,100,0.5));opacity:0;transition:opacity 0.25s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;}
 .col-item.unlocked:hover .col-overlay{opacity:1;}
 .col-overlay-text{font-family:'Zen Kurenaido',cursive;font-size:11px;color:white;letter-spacing:1px;}
-.col-comment-area{padding:6px 8px 7px;min-height:28px;font-family:'Zen Kurenaido',cursive;font-size:11px;color:rgba(252,231,243,0.55);text-align:center;line-height:1.5;word-break:break-all;background:rgba(244,114,182,0.06);border-top:1px solid rgba(244,114,182,0.1);}
+.col-comment-area{padding:6px 8px 7px;min-height:28px;font-family:'Zen Kurenaido',cursive;font-size:11px;color:rgba(252,231,243,0.55);text-align:center;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(244,114,182,0.06);border-top:1px solid rgba(244,114,182,0.1);}
 .col-comment-area.has-comment{color:rgba(252,231,243,0.82);}
 .col-item.locked{aspect-ratio:1;background:rgba(244,114,182,0.04);border-style:dashed;border-color:rgba(244,114,182,0.12);display:flex;align-items:center;justify-content:center;cursor:default;flex-direction:column;gap:4px;}
 .col-item.locked .lock-icon{font-size:18px;opacity:0.18;}
@@ -299,13 +298,16 @@ footer{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;c
     <div class="header-deco"><span>🎀</span></div>
   </header>
 
-  <a id="game-banner" href="game.html">
-    <div class="game-banner-left">
-      <div class="game-banner-icon">🎮</div>
-      <div><div class="game-banner-title">ミニゲームで遊ぶ</div><div class="game-banner-sub">ハートをよけながら飛んでね 💕</div></div>
-    </div>
-    <div class="game-banner-arrow">›</div>
-  </a>
+  <div id="games-section">
+    <a class="game-card" href="game.html">
+      <div class="game-card-icon">💕</div>
+      <div><div class="game-card-title">ハートフラッピー</div><div class="game-card-sub">ハートをよけて飛んでね</div></div>
+    </a>
+    <a class="game-card" href="memory.html">
+      <div class="game-card-icon">🃏</div>
+      <div><div class="game-card-title">思い出神経衰弱</div><div class="game-card-sub">写真でトランプ 💕</div></div>
+    </a>
+  </div>
 
   <div id="daily-msg"></div>
 
@@ -454,12 +456,6 @@ footer{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;c
    ─────────────────────────────────────────
 ============================================= */
 const PRESENT_SCHEDULE = [
-  {
-    date:    "2026-06-11",
-    title:   "ハイキュー好きの夏希へのプレゼント🏐",
-    message: "いきなり誕生日プレゼント✨土曜日発売らしいから引きにいくぞっ！！",
-    image:   "haikyu_ticket.jpg"
-  },
   {
     date:    "2026-06-20",
     title:   "半年記念日プレゼント 🎀",
@@ -658,19 +654,15 @@ document.addEventListener('keydown',e=>{if(!document.getElementById('lightbox').
 ============================================= */
 function downloadPolaroid(photoIdx){
   const item=photoList[photoIdx],isDemo=!item||item.file==='__demo__',comment=getComment(photoIdx);
-  // ライトボックスの実寸に合わせたサイズ
   const PW=380,PAD=14,BOT=70,imgH=Math.round((PW-PAD*2)*(4/3)),PH=PAD+imgH+BOT;
   const canvas=document.getElementById('download-canvas');
   canvas.width=PW;canvas.height=PH;
   const ctx=canvas.getContext('2d');
 
   function drawFrame(photoImg){
-    // 白背景
     ctx.fillStyle='#ffffff';ctx.fillRect(0,0,PW,PH);
     const px=PAD,py=PAD,pw=PW-PAD*2,ph=imgH;
-
     if(photoImg){
-      // アスペクト比を保ちつつ中央クロップ
       const sw=photoImg.naturalWidth,sh=photoImg.naturalHeight;
       const tr=pw/ph,sr=sw/sh;
       let sx=0,sy=0,sW=sw,sH=sh;
@@ -682,21 +674,15 @@ function downloadPolaroid(photoIdx){
       ctx.fillStyle=grd;ctx.fillRect(px,py,pw,ph);
       ctx.font='52px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('📷',PW/2,py+ph/2);
     }
-
-    // ハート（ライトボックスと同じ位置・サイズ）
     const midY=py+ph;
     ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText('💕',PW/2,midY+BOT*0.36);
-
-    // コメント
     if(comment){
       ctx.fillStyle='#a0507a';
       ctx.font=`500 ${comment.length>16?13:15}px 'Noto Serif JP',sans-serif`;
       ctx.textAlign='center';ctx.textBaseline='middle';
       ctx.fillText(comment,PW/2,midY+BOT*0.72);
     }
-
-    // 薄いボーダー
     ctx.strokeStyle='rgba(244,114,182,0.12)';ctx.lineWidth=1;ctx.strokeRect(1,1,PW-2,PH-2);
   }
 
