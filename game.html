@@ -103,7 +103,8 @@ body{font-family:'Zen Kurenaido',cursive;display:flex;flex-direction:column;alig
   margin-top:18px;font-size:13px;color:var(--dim);letter-spacing:1px;
   text-decoration:none;border:1px solid rgba(244,114,182,0.22);
   border-radius:999px;padding:9px 26px;transition:background 0.2s,color 0.2s;
-  display:inline-block;
+  display:inline-block;background:none;cursor:pointer;
+  font-family:'Zen Kurenaido',cursive;
 }
 .back-to-top-btn:hover{background:rgba(244,114,182,0.1);color:var(--pink-l);}
 
@@ -113,6 +114,32 @@ body{font-family:'Zen Kurenaido',cursive;display:flex;flex-direction:column;alig
   letter-spacing:2px;min-height:16px;transition:color 0.3s;
 }
 #debug-hint.active{color:rgba(212,168,76,0.7);}
+
+/* ENDLESS BUTTON */
+.endless-btn{
+  margin-top:12px;
+  background:linear-gradient(135deg,#7c3aed,#a78bfa,#7c3aed) !important;
+  box-shadow:0 4px 24px rgba(124,58,237,0.5) !important;
+  font-size:15px !important;padding:14px 44px !important;
+  -webkit-tap-highlight-color:transparent;
+}
+.endless-btn:hover{box-shadow:0 10px 36px rgba(124,58,237,0.7) !important;}
+.endless-btn.hidden{display:none;}
+@keyframes endlessUnlock{
+  from{opacity:0;transform:translateY(18px) scale(0.82);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.endless-btn.unlocking{animation:endlessUnlock 0.7s cubic-bezier(0.22,1,0.36,1) forwards;}
+@keyframes unlockMsg{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0.4);}
+  25%{opacity:1;transform:translate(-50%,-50%) scale(1.1);}
+  60%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.25);}
+}
+/* CLEAR OVERLAY present btn */
+#cl-present-btn{margin-bottom:12px;}
+#cl-present-btn:disabled{background:rgba(255,255,255,0.1);color:var(--dim);box-shadow:none;cursor:default;}
+#cl-present-btn:disabled::after{display:none;}
 
 /* PRESENT BOX */
 @keyframes hintPulse{0%,100%{opacity:0.4;transform:translateY(0);}50%{opacity:1;transform:translateY(-4px);}}
@@ -146,6 +173,19 @@ body{font-family:'Zen Kurenaido',cursive;display:flex;flex-direction:column;alig
     <div class="goal-hint">🏆 ゴール：50個の障害物を超えたら<br>スペシャルプレゼントが出現！</div>
     <br>
     <button class="play-btn" id="btn-start">はじめる 💕</button>
+    <button class="play-btn endless-btn hidden" id="endless-btn">♾️ エンドレスモード</button>
+    <a href="index.html" class="back-to-top-btn" style="margin-top:16px;">← トップにもどる</a>
+  </div>
+
+  <!-- CLEAR OVERLAY -->
+  <div class="overlay hidden" id="overlay-clear">
+    <div class="ov-icon">🎉</div>
+    <div class="ov-title">ゴールクリア！</div>
+    <div class="ov-score" id="cl-score">スコア：0</div>
+    <div class="ov-best" id="cl-best">ベスト：0</div>
+    <button class="play-btn" id="cl-present-btn">🎁 プレゼントを受け取る</button>
+    <button class="play-btn" id="btn-retry-clear" style="font-size:15px;padding:14px 44px;">もう一度 💕</button>
+    <button class="back-to-top-btn" id="cl-start-btn" style="margin-top:14px;">スタートに戻る</button>
   </div>
 
   <!-- GAMEOVER OVERLAY -->
@@ -154,9 +194,10 @@ body{font-family:'Zen Kurenaido',cursive;display:flex;flex-direction:column;alig
     <div class="ov-title">ゲームオーバー</div>
     <div class="ov-score" id="go-score">スコア：0</div>
     <div class="ov-best" id="go-best">ベスト：0</div>
-    <div id="goal-msg">🎁 ゴール達成！プレゼントを見てね！</div>
+    <div id="goal-msg" style="display:none;">🎁 ゴール達成！プレゼントを見てね！</div>
     <button class="play-btn" id="btn-retry">もう一度 💕</button>
     <div class="goal-hint" id="go-hint">あと<span id="go-remain">50</span>個で<br>プレゼントが出るよ！</div>
+    <button class="back-to-top-btn" id="go-start-btn" style="margin-top:10px;">スタートに戻る</button>
     <a href="index.html" class="back-to-top-btn">← トップにもどる</a>
     <div id="debug-hint"></div>
   </div>
@@ -194,13 +235,12 @@ body{font-family:'Zen Kurenaido',cursive;display:flex;flex-direction:column;alig
       <!-- PHASE 2: 内容 -->
       <div id="present-phase-reveal" style="display:none;flex-direction:column;align-items:center;gap:16px;overflow-y:auto;max-height:90vh;padding:8px 0;">
         <div id="present-reveal-icon" style="font-size:52px;">🎁</div>
-        <div id="present-reveal-title" style="font-family:'Zen Kurenaido',cursive;font-size:clamp(18px,5vw,28px);color:#f0cc78;text-shadow:0 0 30px rgba(212,168,76,0.8);letter-spacing:2px;line-height:1.5;"></div>
-        <div id="present-reveal-img-wrap" style="display:none;width:100%;max-width:240px;background:#fff;padding:10px 10px 48px;box-shadow:0 8px 40px rgba(0,0,0,0.6);position:relative;">
-          <img id="present-reveal-img" src="" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;">
-          <div style="position:absolute;bottom:0;left:0;right:0;height:48px;display:flex;align-items:center;justify-content:center;font-size:20px;animation:heartbeat 1.4s ease-in-out infinite;">💕</div>
+        <div id="present-reveal-title" style="font-family:'Zen Kurenaido',cursive;font-size:clamp(13px,3.5vw,17px);color:#f0cc78;text-shadow:0 0 30px rgba(212,168,76,0.8);letter-spacing:2px;line-height:1.5;white-space:nowrap;"></div>
+        <div id="present-reveal-img-wrap" style="display:none;width:100%;max-width:340px;border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.5);">
+          <img id="present-reveal-img" src="" alt="" style="width:100%;display:block;max-height:52vh;object-fit:contain;">
         </div>
         <div style="background:linear-gradient(135deg,rgba(212,168,76,0.12),rgba(244,114,182,0.08));border:1px solid rgba(212,168,76,0.35);border-radius:16px;padding:20px 24px;max-width:300px;width:100%;">
-          <div id="present-reveal-msg" style="font-size:14px;color:#fce7f3;line-height:2.2;opacity:0.95;white-space:pre-line;"></div>
+          <div id="present-reveal-msg" style="font-size:12px;color:#fce7f3;line-height:2.2;opacity:0.95;white-space:pre-line;"></div>
         </div>
         <button id="present-reveal-close" style="background:linear-gradient(135deg,#e879a0,#f9a8d4,#e879a0);color:white;border:none;border-radius:999px;padding:15px 48px;font-family:'Zen Kurenaido',cursive;font-size:15px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 24px rgba(232,121,160,0.6);">とじる 💕</button>
         <button id="btn-play-again" class="play-btn" style="font-size:14px;padding:12px 36px;">もう一度あそぶ</button>
@@ -214,9 +254,10 @@ body{font-family:'Zen Kurenaido',cursive;display:flex;flex-direction:column;alig
 /* =============================================
    SETTINGS
 ============================================= */
-const GOAL = 50; // この数の障害物を超えたらクリア
-const CLEAR_MESSAGE = '夏希のことが大好きだよ！！💕\nこれからもずっと一緒にいようね 🎂';
-const BEST_KEY = 'hf_best_v1';
+const GOAL             = 50;
+const BEST_KEY         = 'hf_best_v1';
+const CLEARED_KEY      = 'hf_cleared_v1';
+const ENDLESS_BEST_KEY = 'hf_endless_best_v1';
 
 /* =============================================
    CANVAS SETUP
@@ -241,6 +282,8 @@ let score = 0;
 let bestScore = parseInt(localStorage.getItem(BEST_KEY) || '0');
 let goalReached = false;
 let raf = null;
+let gameMode = 'normal'; // 'normal' | 'endless'
+let pendingUnlockAnim = false;
 
 /* =============================================
    PLAYER (Heart)
@@ -291,7 +334,7 @@ function flap() { player.vy = FLAP_VEL; spawnFlapParticles(); }
    PIPES (Ribbon obstacles)
 ============================================= */
 const PIPE_W     = 52;
-const PIPE_GAP   = 170;
+const PIPE_GAP   = 210;
 const PIPE_SPEED = 2.8;
 const PIPE_INTERVAL = 88; // フレーム間隔
 
@@ -317,7 +360,7 @@ function updatePipes() {
       pipes[i].passed = true;
       score++;
       updateScoreDisplay();
-      if (score >= GOAL && !goalReached) { goalReached = true; triggerClear(); return; }
+      if (gameMode === 'normal' && score >= GOAL && !goalReached) { goalReached = true; triggerClear(); return; }
     }
 
     // 衝突判定
@@ -494,9 +537,9 @@ function gameLoop(ts) {
 ============================================= */
 const GAME_PRESENT = {
   date:    'game-clear',
-  title:   'ゲームクリアプレゼント 🎮',
-  message: '50個突破すごい！！\n夏希のことが大好きだよ 💕\nこれからもずっと一緒にいようね 🎂',
-  image:   ''   // photos/ フォルダの画像ファイル名、なしは ""
+  title:   'ハートフラッピークリア報酬💕',
+  message: 'ゲームクリアおめでとう！！\n疲れたときはいつでも何回でも使ってね🎫\n夏希専属のマッサージ師が担当します🫡',
+  image:   'relax_ticket.jpg'
 };
 
 // index.html と共有する opened プレゼントキー
@@ -588,19 +631,14 @@ function showPresentOverlay(pData){
 document.getElementById('present-reveal-close').addEventListener('click', ()=>{
   stopPresentBg();
   document.getElementById('present-overlay').style.display = 'none';
-  // ゲームオーバー画面へ（もう一度遊べる）
-  document.getElementById('overlay-gameover').classList.remove('hidden');
-  document.getElementById('go-score').textContent = 'スコア：'+score;
-  document.getElementById('go-best').textContent  = 'ベスト：'+bestScore;
-  document.getElementById('goal-msg').style.display = 'block';
-  document.getElementById('go-hint').style.display  = 'none';
+  if (state === 'clear') { showClearOverlay(); }
+  else { document.getElementById('overlay-gameover').classList.remove('hidden'); }
 });
 
-/* もう一度あそぶ（reveal内） */
 document.getElementById('btn-play-again').addEventListener('click', ()=>{
   stopPresentBg();
   document.getElementById('present-overlay').style.display = 'none';
-  startGame();
+  startGame('normal');
 });
 
 /* =============================================
@@ -609,11 +647,60 @@ document.getElementById('btn-play-again').addEventListener('click', ()=>{
 function triggerClear() {
   state = 'clear';
   cancelAnimationFrame(raf);
+  if (score > bestScore) { bestScore = score; localStorage.setItem(BEST_KEY, bestScore); }
   launchConfetti();
   setTimeout(() => launchConfetti(), 600);
-  // ゲームオーバー画面を隠してプレゼント演出へ
+  // 初クリア判定
+  if (!localStorage.getItem(CLEARED_KEY)) {
+    localStorage.setItem(CLEARED_KEY, '1');
+    pendingUnlockAnim = true;
+  }
   document.getElementById('overlay-gameover').classList.add('hidden');
-  setTimeout(() => showPresentOverlay(GAME_PRESENT), 800);
+  setTimeout(showClearOverlay, 800);
+}
+
+function showClearOverlay() {
+  document.getElementById('cl-score').textContent = `スコア：${score}`;
+  document.getElementById('cl-best').textContent  = `ベスト：${bestScore}`;
+  const pBtn = document.getElementById('cl-present-btn');
+  const received = getOpened().find(p => p.date === GAME_PRESENT.date);
+  if (received) {
+    pBtn.textContent = '🎁 受け取り済み';
+    pBtn.disabled = true; pBtn.style.opacity = '0.45'; pBtn.style.boxShadow = 'none';
+  } else {
+    pBtn.textContent = '🎁 プレゼントを受け取る';
+    pBtn.disabled = false; pBtn.style.opacity = ''; pBtn.style.boxShadow = '';
+  }
+  document.getElementById('overlay-clear').classList.remove('hidden');
+}
+
+function goToStart() {
+  state = 'idle';
+  ['overlay-clear','overlay-gameover'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById('present-overlay').style.display = 'none';
+  stopPresentBg();
+  document.getElementById('overlay-start').classList.remove('hidden');
+  drawBackground();
+  updateEndlessButton();
+  if (pendingUnlockAnim) { pendingUnlockAnim = false; setTimeout(triggerUnlockAnim, 500); }
+}
+
+function updateEndlessButton() {
+  const btn = document.getElementById('endless-btn');
+  localStorage.getItem(CLEARED_KEY) ? btn.classList.remove('hidden') : btn.classList.add('hidden');
+}
+
+function triggerUnlockAnim() {
+  const btn = document.getElementById('endless-btn');
+  btn.classList.remove('hidden');
+  btn.classList.add('unlocking');
+  btn.addEventListener('animationend', () => btn.classList.remove('unlocking'), { once: true });
+  launchConfetti(60);
+  const msg = document.createElement('div');
+  msg.style.cssText = "position:fixed;top:50%;left:50%;font-family:'Zen Kurenaido',cursive;font-size:clamp(16px,5vw,26px);color:#a78bfa;text-shadow:0 0 20px rgba(167,139,250,0.9),0 0 40px rgba(167,139,250,0.5);pointer-events:none;z-index:100;animation:unlockMsg 1.8s ease-out forwards;letter-spacing:3px;white-space:nowrap;";
+  msg.textContent = '✨ エンドレスモード解放！';
+  document.body.appendChild(msg);
+  msg.addEventListener('animationend', () => msg.remove());
 }
 
 /* =============================================
@@ -621,16 +708,24 @@ function triggerClear() {
 ============================================= */
 function showGameOver() {
   cancelAnimationFrame(raf);
-  document.getElementById('go-score').textContent = `スコア：${score}`;
-  document.getElementById('go-best').textContent  = `ベスト：${bestScore}`;
-  const remain = Math.max(0, GOAL - score);
-  if (goalReached) {
-    document.getElementById('goal-msg').style.display = 'block';
+  if (gameMode === 'endless') {
+    const eb = parseInt(localStorage.getItem(ENDLESS_BEST_KEY) || '0');
+    if (score > eb) localStorage.setItem(ENDLESS_BEST_KEY, score);
+    document.getElementById('go-score').textContent = `エンドレス：${score}`;
+    document.getElementById('go-best').textContent  = `ベスト：${Math.max(score, eb)}`;
+    document.getElementById('goal-msg').style.display = 'none';
     document.getElementById('go-hint').style.display  = 'none';
   } else {
+    document.getElementById('go-score').textContent = `スコア：${score}`;
+    document.getElementById('go-best').textContent  = `ベスト：${bestScore}`;
     document.getElementById('goal-msg').style.display = 'none';
-    document.getElementById('go-hint').style.display  = 'block';
-    document.getElementById('go-remain').textContent  = remain;
+    const alreadyCleared = localStorage.getItem(CLEARED_KEY);
+    if (!alreadyCleared) {
+      document.getElementById('go-hint').style.display = 'block';
+      document.getElementById('go-remain').textContent = Math.max(0, GOAL - score);
+    } else {
+      document.getElementById('go-hint').style.display = 'none';
+    }
   }
   document.getElementById('overlay-gameover').classList.remove('hidden');
 }
@@ -638,11 +733,13 @@ function showGameOver() {
 /* =============================================
    CONTROLS
 ============================================= */
-function startGame() {
+function startGame(mode) {
+  gameMode = mode || 'normal';
   state = 'playing'; score = 0; goalReached = false; pipes = []; pipeTimer = 60; flapParticles = [];
   resetPlayer(); updateScoreDisplay();
-  document.getElementById('overlay-start').classList.add('hidden');
-  document.getElementById('overlay-gameover').classList.add('hidden');
+  ['overlay-start','overlay-gameover','overlay-clear'].forEach(id =>
+    document.getElementById(id).classList.add('hidden')
+  );
   document.getElementById('present-overlay').style.display = 'none';
   stopPresentBg();
   raf = requestAnimationFrame(gameLoop);
@@ -650,19 +747,28 @@ function startGame() {
 
 function handleInput() {
   if (state === 'playing') flap();
-  else if (state === 'idle') startGame();
+  else if (state === 'idle') startGame('normal');
 }
 
 canvas.addEventListener('click', handleInput);
 canvas.addEventListener('touchstart', e => { e.preventDefault(); handleInput(); }, { passive: false });
 document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); handleInput(); } });
 
-document.getElementById('btn-start').addEventListener('click', startGame);
-document.getElementById('btn-retry').addEventListener('click', startGame);
-document.getElementById('btn-play-again').addEventListener('click', startGame);
+document.getElementById('btn-start').addEventListener('click', () => startGame('normal'));
+document.getElementById('btn-retry').addEventListener('click', () => startGame(gameMode));
+document.getElementById('btn-retry-clear').addEventListener('click', () => startGame('normal'));
+document.getElementById('cl-start-btn').addEventListener('click', goToStart);
+document.getElementById('go-start-btn').addEventListener('click', goToStart);
+document.getElementById('endless-btn').addEventListener('click', () => startGame('endless'));
+document.getElementById('cl-present-btn').addEventListener('click', () => {
+  if (getOpened().find(p => p.date === GAME_PRESENT.date)) return;
+  document.getElementById('overlay-clear').classList.add('hidden');
+  showPresentOverlay(GAME_PRESENT);
+});
 
 function updateScoreDisplay() {
-  document.getElementById('score-display').textContent = `⭐ ${score} / ${GOAL}`;
+  document.getElementById('score-display').textContent =
+    gameMode === 'endless' ? `⭐ ${score}` : `⭐ ${score} / ${GOAL}`;
 }
 
 /* =============================================
@@ -789,6 +895,7 @@ function launchConfetti() {
 }
 
 /* ===== INITIAL DRAW ===== */
+updateEndlessButton();
 drawBackground();
 drawHeartShape(W * 0.28, H * 0.45, HEART_SIZE, '#f472b6');
 </script>

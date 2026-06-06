@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>思い出神経衰弱 💕</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1a0a14;--pink:#f472b6;--pink-l:#fba8d0;--pink-d:#c0527a;
+  --gold:#d4a84c;--gold-l:#f0cc78;--cream:#fdf0f5;
+  --text:#fce7f3;--dim:rgba(252,231,243,0.45);
+  --border:rgba(244,114,182,0.22);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;}
+body{font-family:'Zen Kurenaido',cursive;display:flex;flex-direction:column;align-items:center;color:var(--text);}
+
+/* ===== LAYOUT ===== */
+#game-wrap{
+  position:relative;width:100%;height:100%;max-width:480px;
+  display:flex;flex-direction:column;align-items:center;overflow:hidden;
+}
+
+/* ===== TOP BAR ===== */
+#top-bar{
+  width:100%;flex-shrink:0;z-index:10;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;
+}
+#back-btn{
+  background:rgba(244,114,182,0.12);border:1px solid rgba(244,114,182,0.3);
+  border-radius:999px;color:var(--pink-l);padding:6px 14px;
+  font-size:12px;letter-spacing:1px;cursor:pointer;text-decoration:none;
+  transition:background 0.2s;-webkit-tap-highlight-color:transparent;flex-shrink:0;
+}
+#back-btn:hover{background:rgba(244,114,182,0.22);}
+#hud{display:flex;gap:14px;align-items:center;}
+#hud-moves{font-size:12px;color:var(--gold-l);letter-spacing:1px;}
+#hud-timer{
+  font-size:20px;font-weight:bold;color:var(--gold-l);
+  min-width:44px;text-align:center;transition:color 0.3s;
+}
+#hud-timer.warn{color:#fb7185;animation:timerPulse 0.6s ease-in-out infinite;}
+@keyframes timerPulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+#giveup-btn{
+  background:rgba(251,113,133,0.15);border:1px solid rgba(251,113,133,0.3);
+  border-radius:999px;color:#fda4af;padding:6px 12px;
+  font-size:12px;letter-spacing:1px;cursor:pointer;
+  transition:background 0.2s;display:none;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+#giveup-btn:hover{background:rgba(251,113,133,0.28);}
+#giveup-btn.show{display:block;}
+
+/* ===== TIMER BAR ===== */
+#timer-bar-wrap{width:100%;height:4px;flex-shrink:0;background:rgba(244,114,182,0.1);}
+#timer-bar{height:100%;width:100%;background:linear-gradient(90deg,var(--gold),var(--pink));transition:width 0.95s linear,background 0.3s;}
+#timer-bar.halfwarn{background:linear-gradient(90deg,#fb923c,#f97316);}
+#timer-bar.warn{background:linear-gradient(90deg,#fb7185,#f43f5e);}
+
+/* ===== ハーフタイムエフェクト ===== */
+/* 赤ビネット（画面周囲のグロー） */
+#game-wrap.halfwarn::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:5;
+  box-shadow:inset 0 0 0 rgba(251,113,133,0);
+  animation:vignetteIn 0.4s ease-out forwards, vignettePulse 1.2s 0.4s ease-in-out infinite alternate;
+}
+@keyframes vignetteIn{
+  from{box-shadow:inset 0 0 0 rgba(251,113,133,0);}
+  to{box-shadow:inset 0 0 70px rgba(251,113,133,0.35);}
+}
+@keyframes vignettePulse{
+  from{box-shadow:inset 0 0 50px rgba(251,113,133,0.25);}
+  to{box-shadow:inset 0 0 90px rgba(251,113,133,0.5);}
+}
+/* スクリーンシェイク */
+@keyframes screenShake{
+  0%,100%{transform:translateX(0);}
+  15%{transform:translateX(-7px);}
+  30%{transform:translateX(7px);}
+  45%{transform:translateX(-5px);}
+  60%{transform:translateX(5px);}
+  75%{transform:translateX(-3px);}
+  90%{transform:translateX(3px);}
+}
+.screen-shake{animation:screenShake 0.5s ease-in-out !important;}
+/* タイマーバウンス */
+@keyframes timerBounce{
+  0%{transform:scale(1);}
+  25%{transform:scale(2.2);}
+  55%{transform:scale(0.85);}
+  80%{transform:scale(1.3);}
+  100%{transform:scale(1);}
+}
+.timer-bounce{animation:timerBounce 0.55s cubic-bezier(0.36,0.07,0.19,0.97) !important;}
+/* フラッシュオーバーレイ */
+#flash-overlay{position:absolute;inset:0;z-index:20;pointer-events:none;opacity:0;}
+#flash-overlay.active{animation:flashRed 0.7s ease-out forwards;}
+@keyframes flashRed{
+  0%{background:rgba(251,113,133,0.28);opacity:1;}
+  100%{background:rgba(251,113,133,0);opacity:0;}
+}
+/* 「急いで！」メッセージ */
+@keyframes halfwarnMsg{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0.4);}
+  25%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}
+  55%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.25);}
+}
+
+/* ===== BOARD VIEW BAR ===== */
+#board-bar{
+  width:100%;flex-shrink:0;
+  background:rgba(26,10,20,0.95);padding:8px 14px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid rgba(244,114,182,0.2);
+}
+#board-bar.hidden{display:none;}
+#board-hint-text{font-size:11px;color:var(--pink-l);letter-spacing:1px;}
+#board-close-btn{
+  background:rgba(244,114,182,0.12);border:1px solid rgba(244,114,182,0.3);
+  border-radius:999px;color:var(--pink-l);padding:5px 12px;
+  font-size:11px;letter-spacing:1px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:background 0.2s;
+}
+#board-close-btn:hover{background:rgba(244,114,182,0.22);}
+
+/* ===== GAME AREA ===== */
+#game-area{
+  flex:1;width:100%;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  padding:6px 10px 10px;
+}
+#card-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;width:100%;}
+
+/* ===== CARD ===== */
+.card{
+  aspect-ratio:3/4;cursor:pointer;
+  perspective:700px;-webkit-tap-highlight-color:transparent;user-select:none;
+}
+.card-inner{
+  width:100%;height:100%;position:relative;
+  transform-style:preserve-3d;
+  transition:transform 0.42s cubic-bezier(0.4,0,0.2,1);
+}
+.card.flipped .card-inner,.card.matched .card-inner{transform:rotateY(180deg);}
+.card-face{
+  position:absolute;inset:0;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:7px;overflow:hidden;
+}
+
+/* 裏面 */
+.card-back{
+  background:linear-gradient(135deg,#2a0d20,#3d1128,#2a0d20);
+  border:1px solid rgba(244,114,182,0.28);
+  display:flex;align-items:center;justify-content:center;
+}
+.card-back::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(45deg,rgba(244,114,182,0.13) 0px,rgba(244,114,182,0.13) 1px,transparent 1px,transparent 12px),
+    repeating-linear-gradient(-45deg,rgba(212,168,76,0.13) 0px,rgba(212,168,76,0.13) 1px,transparent 1px,transparent 12px);
+}
+.card-back-heart{
+  font-size:clamp(12px,3.5vw,22px);position:relative;z-index:1;
+  filter:drop-shadow(0 0 5px rgba(244,114,182,0.8));
+  animation:heartbeat 1.6s ease-in-out infinite;
+}
+@keyframes heartbeat{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+
+/* 表面 */
+.card-front{transform:rotateY(180deg);background:#fff;display:flex;flex-direction:column;}
+.card-photo{flex:1;overflow:hidden;}
+.card-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+.card-bottom{height:18px;flex-shrink:0;background:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.card.matched .card-face.card-front{box-shadow:0 0 8px rgba(244,114,182,0.55),0 0 18px rgba(212,168,76,0.25);}
+
+/* 盤面ビュー中のマッチカード */
+.board-active .card.matched{cursor:pointer;transition:transform 0.15s;}
+.board-active .card.matched:hover{transform:scale(1.06);}
+
+/* ===== LIGHTBOX ===== */
+#lb-overlay{
+  position:absolute;inset:0;z-index:60;
+  background:rgba(10,2,8,0.95);backdrop-filter:blur(16px);
+  display:flex;align-items:center;justify-content:center;
+  padding:56px 20px 36px;
+}
+#lb-overlay.hidden{display:none;}
+#lb-container{
+  position:relative;width:100%;max-width:340px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+}
+#lb-img{
+  width:100%;max-height:62vh;object-fit:contain;
+  border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.7);display:block;
+}
+#lb-close{
+  position:absolute;top:-46px;right:0;
+  background:none;border:1px solid rgba(244,114,182,0.35);
+  border-radius:50%;width:36px;height:36px;
+  color:var(--pink-l);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;transition:background 0.2s;
+}
+#lb-close:hover{background:rgba(244,114,182,0.12);}
+#lb-controls{display:flex;align-items:center;gap:20px;}
+#lb-prev,#lb-next{
+  background:rgba(244,114,182,0.12);border:1px solid rgba(244,114,182,0.3);
+  border-radius:50%;width:40px;height:40px;color:var(--pink-l);font-size:20px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;transition:background 0.2s;
+}
+#lb-prev:hover,#lb-next:hover{background:rgba(244,114,182,0.22);}
+#lb-counter{font-size:11px;color:var(--dim);letter-spacing:2px;min-width:44px;text-align:center;}
+
+/* ===== OVERLAYS ===== */
+.overlay{
+  position:absolute;inset:0;z-index:30;
+  background:rgba(10,2,8,0.92);backdrop-filter:blur(10px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:22px 24px;text-align:center;
+  animation:fadeIn 0.4s ease;overflow-y:auto;gap:0;
+}
+.overlay.hidden{display:none;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.ov-icon{font-size:46px;margin-bottom:8px;}
+.ov-title{font-size:clamp(20px,5vw,32px);color:var(--cream);margin-bottom:6px;text-shadow:0 0 24px rgba(244,114,182,0.5);}
+.ov-sub{font-size:11px;color:var(--dim);letter-spacing:1px;margin-bottom:14px;line-height:1.9;}
+.ov-score{font-size:14px;color:var(--gold-l);letter-spacing:2px;margin-bottom:4px;}
+.ov-best{font-size:11px;color:var(--dim);letter-spacing:1px;margin-bottom:4px;}
+.ov-new-record{font-size:12px;color:var(--pink-l);letter-spacing:2px;margin-bottom:4px;animation:glowPulse2 1s ease-in-out 3;}
+.ov-new-record.hidden{display:none;}
+@keyframes glowPulse2{0%,100%{opacity:0.6;}50%{opacity:1;text-shadow:0 0 12px rgba(244,114,182,0.8);}}
+.ov-allclear-msg{
+  font-size:12px;color:var(--gold-l);letter-spacing:1px;margin-bottom:10px;
+  background:rgba(212,168,76,0.1);border:1px solid rgba(212,168,76,0.35);
+  border-radius:8px;padding:8px 16px;line-height:1.7;
+}
+.ov-allclear-msg.hidden{display:none;}
+
+/* ===== 難易度選択 ===== */
+#difficulty-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;width:100%;max-width:340px;margin-bottom:14px;}
+.diff-btn{
+  background:rgba(244,114,182,0.08);border:1px solid var(--border);
+  border-radius:12px;padding:11px 5px;
+  cursor:pointer;transition:background 0.2s,border-color 0.2s,transform 0.15s;
+  -webkit-tap-highlight-color:transparent;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.diff-btn:hover:not(:disabled){background:rgba(244,114,182,0.16);border-color:var(--pink);}
+.diff-btn.selected{background:rgba(244,114,182,0.2);border-color:var(--pink);}
+.diff-btn:disabled{opacity:0.4;cursor:not-allowed;border-style:dashed;}
+.diff-label{font-size:12px;color:var(--cream);letter-spacing:1px;}
+.diff-cards{font-size:9px;color:var(--gold-l);letter-spacing:1px;}
+.diff-info{font-size:9px;color:var(--dim);min-height:12px;line-height:1.4;}
+.diff-cleared{font-size:9px;color:var(--pink-l);}
+.diff-cleared.hidden{display:none;}
+
+/* ===== BUTTONS ===== */
+.play-btn{
+  background:linear-gradient(135deg,#e879a0,#f9a8d4,#e879a0);
+  color:white;border:none;border-radius:999px;
+  padding:14px 46px;font-family:'Zen Kurenaido',cursive;
+  font-size:15px;letter-spacing:3px;cursor:pointer;
+  box-shadow:0 4px 24px rgba(232,121,160,0.5);
+  transition:transform 0.15s,box-shadow 0.15s;
+  position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;
+}
+.play-btn::after{content:'';position:absolute;top:-60%;left:-60%;width:220%;height:220%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,0.4) 50%,transparent 65%);animation:shine 3s linear infinite;}
+@keyframes shine{from{transform:translateX(-100%) rotate(20deg);}to{transform:translateX(100%) rotate(20deg);}}
+.play-btn:hover{transform:translateY(-3px);box-shadow:0 10px 36px rgba(232,121,160,0.7);}
+.play-btn:disabled{background:rgba(255,255,255,0.1);color:var(--dim);box-shadow:none;cursor:default;transform:none;}
+.play-btn:disabled::after{display:none;}
+
+.secondary-btn{
+  font-size:12px;color:var(--dim);letter-spacing:1px;
+  text-decoration:none;border:1px solid rgba(244,114,182,0.22);
+  border-radius:999px;padding:7px 20px;
+  transition:background 0.2s,color 0.2s;display:inline-block;
+  cursor:pointer;background:none;margin-top:9px;
+  font-family:'Zen Kurenaido',cursive;-webkit-tap-highlight-color:transparent;
+}
+.secondary-btn:hover{background:rgba(244,114,182,0.1);color:var(--pink-l);}
+
+.view-board-btn{
+  font-size:12px;color:var(--pink-l);letter-spacing:1px;
+  border:1px solid rgba(244,114,182,0.35);border-radius:999px;padding:7px 20px;
+  background:rgba(244,114,182,0.08);cursor:pointer;margin-top:9px;
+  font-family:'Zen Kurenaido',cursive;-webkit-tap-highlight-color:transparent;
+  transition:background 0.2s;
+}
+.view-board-btn:hover{background:rgba(244,114,182,0.18);}
+
+/* プレゼントボタン（スタート画面） */
+#present-view-btn{
+  padding:12px 32px;margin-top:14px;
+  background:linear-gradient(135deg,rgba(212,168,76,0.18),rgba(244,114,182,0.1));
+  border:1px solid rgba(212,168,76,0.5);border-radius:999px;
+  color:var(--gold-l);font-family:'Zen Kurenaido',cursive;
+  font-size:14px;letter-spacing:2px;cursor:pointer;
+  animation:goldGlow 2s ease-in-out infinite;
+  -webkit-tap-highlight-color:transparent;
+}
+@keyframes goldGlow{0%,100%{box-shadow:0 0 8px rgba(212,168,76,0.3);}50%{box-shadow:0 0 24px rgba(212,168,76,0.7);}}
+#present-view-btn.hidden{display:none;}
+
+#unlock-hint{font-size:11px;color:var(--pink-l);letter-spacing:1px;margin-bottom:10px;line-height:1.7;display:none;}
+#clear-progress{margin-top:8px;font-size:10px;color:var(--dim);letter-spacing:2px;min-height:14px;}
+
+/* ===== DEBUG HINT ===== */
+#debug-hint{margin-top:8px;font-size:10px;color:rgba(252,231,243,0.18);letter-spacing:2px;min-height:14px;}
+
+/* ===== PRESENT BOX ===== */
+@keyframes hintPulse{0%,100%{opacity:0.4;transform:translateY(0);}50%{opacity:1;transform:translateY(-4px);}}
+@keyframes boxShake{0%,100%{transform:rotate(0);}20%{transform:rotate(-8deg) scale(1.05);}40%{transform:rotate(8deg) scale(1.08);}60%{transform:rotate(-5deg);}80%{transform:rotate(4deg);}}
+@keyframes boxBurst{0%{transform:scale(1);opacity:1;}30%{transform:scale(1.4) rotate(-10deg);opacity:1;}60%{transform:scale(1.6) rotate(15deg);opacity:0.5;}100%{transform:scale(0) rotate(30deg);opacity:0;}}
+@keyframes revealIn{from{opacity:0;transform:scale(0.7) translateY(30px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes ringPulse{0%{transform:scale(0.5);opacity:0.8;}100%{transform:scale(2.5);opacity:0;}}
+.tap-ring{position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(212,168,76,0.4);animation:ringPulse 1.8s ease-out infinite;pointer-events:none;}
+.tap-ring:nth-child(2){animation-delay:0.6s;}.tap-ring:nth-child(3){animation-delay:1.2s;}
+.box-shaking{animation:boxShake 0.5s ease-in-out;}
+.box-bursting{animation:boxBurst 0.55s cubic-bezier(0.36,0.07,0.19,0.97) forwards;}
+#present-phase-reveal.show{animation:revealIn 0.8s cubic-bezier(0.22,1,0.36,1) forwards;}
+
+/* ===== CONFETTI ===== */
+.confetti-piece{position:fixed;top:-14px;pointer-events:none;z-index:999;animation:confettiFall linear forwards;}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}80%{opacity:1;}100%{transform:translateY(108vh) rotate(900deg);opacity:0;}}
+</style>
+</head>
+<body>
+<div id="game-wrap">
+
+  <!-- ===== TOP BAR ===== -->
+  <div id="top-bar">
+    <a id="back-btn" href="index.html">← もどる</a>
+    <div id="hud">
+      <span id="hud-moves">👆 0手</span>
+      <span id="hud-timer">30</span>
+    </div>
+    <button id="giveup-btn">やめる</button>
+  </div>
+
+  <!-- ===== TIMER PROGRESS BAR ===== -->
+  <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
+
+  <!-- ===== BOARD VIEW BAR ===== -->
+  <div id="board-bar" class="hidden">
+    <span id="board-hint-text">💕 写真をタップして拡大</span>
+    <button id="board-close-btn">スタート画面へ</button>
+  </div>
+
+  <!-- ===== FLASH OVERLAY ===== -->
+  <div id="flash-overlay"></div>
+
+  <!-- ===== GAME AREA ===== -->
+  <div id="game-area"><div id="card-grid"></div></div>
+
+  <!-- ===== PHOTO LIGHTBOX ===== -->
+  <div id="lb-overlay" class="hidden">
+    <div id="lb-container">
+      <button id="lb-close">✕</button>
+      <img id="lb-img" src="" alt="">
+      <div id="lb-controls">
+        <button id="lb-prev">‹</button>
+        <span id="lb-counter"></span>
+        <button id="lb-next">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== START OVERLAY ===== -->
+  <div class="overlay" id="overlay-start">
+    <div class="ov-icon">🃏</div>
+    <div class="ov-title">思い出神経衰弱</div>
+    <div class="ov-sub">同じ写真のカードを2枚めくってね 💕<br><span style="color:var(--gold-l)">⏱ 制限時間 30秒</span></div>
+    <div id="unlock-hint"></div>
+    <div id="difficulty-grid">
+      <button class="diff-btn selected" data-diff="easy">
+        <span class="diff-label">かんたん</span>
+        <span class="diff-cards">8枚 / 4ペア</span>
+        <span class="diff-info" id="diff-info-easy"></span>
+        <span class="diff-cleared hidden" id="diff-cleared-easy">✅ クリア済み</span>
+      </button>
+      <button class="diff-btn" data-diff="normal">
+        <span class="diff-label">ふつう</span>
+        <span class="diff-cards">12枚 / 6ペア</span>
+        <span class="diff-info" id="diff-info-normal"></span>
+        <span class="diff-cleared hidden" id="diff-cleared-normal">✅ クリア済み</span>
+      </button>
+      <button class="diff-btn" data-diff="hard">
+        <span class="diff-label">むずかしい</span>
+        <span class="diff-cards">16枚 / 8ペア</span>
+        <span class="diff-info" id="diff-info-hard"></span>
+        <span class="diff-cleared hidden" id="diff-cleared-hard">✅ クリア済み</span>
+      </button>
+      <button class="diff-btn" data-diff="gekimuzu">
+        <span class="diff-label">激ムズ</span>
+        <span class="diff-cards">20枚 / 10ペア</span>
+        <span class="diff-info" id="diff-info-gekimuzu"></span>
+        <span class="diff-cleared hidden" id="diff-cleared-gekimuzu">✅ クリア済み</span>
+      </button>
+    </div>
+    <button class="play-btn" id="btn-start">はじめる 💕</button>
+    <div id="clear-progress"></div>
+    <button id="present-view-btn" class="hidden">🎁 プレゼントを受け取る</button>
+    <a href="index.html" class="secondary-btn">← メイン画面にもどる</a>
+  </div>
+
+  <!-- ===== CLEAR OVERLAY ===== -->
+  <div class="overlay hidden" id="overlay-clear">
+    <div class="ov-icon">🎉</div>
+    <div class="ov-title">クリア！</div>
+    <div class="ov-score" id="cl-score"></div>
+    <div class="ov-best" id="cl-best"></div>
+    <div class="ov-new-record hidden" id="cl-new-record">🏆 新記録！</div>
+    <div class="ov-allclear-msg hidden" id="cl-allclear-msg">🎁 全難易度クリア達成！<br>スタート画面でプレゼントを受け取ってね！</div>
+    <button class="view-board-btn" id="btn-view-board-clear">📷 結果を見る</button>
+    <button class="play-btn" id="btn-retry" style="margin-top:12px;">もう一度 💕</button>
+    <button class="secondary-btn" id="btn-to-start-clear">スタート画面へ</button>
+    <a href="index.html" class="secondary-btn">← トップにもどる</a>
+    <div id="debug-hint"></div>
+  </div>
+
+  <!-- ===== TIMEUP OVERLAY ===== -->
+  <div class="overlay hidden" id="overlay-timeup">
+    <div class="ov-icon">⌛</div>
+    <div class="ov-title">タイムアップ！</div>
+    <div class="ov-score" id="tu-score"></div>
+    <button class="view-board-btn" id="btn-view-board-tu">📷 盤面を見る</button>
+    <button class="play-btn" id="btn-retry-tu" style="margin-top:12px;">もう一度 💕</button>
+    <button class="secondary-btn" id="btn-to-start-tu">スタート画面へ</button>
+    <a href="index.html" class="secondary-btn">← トップにもどる</a>
+  </div>
+
+  <!-- ===== GIVEUP OVERLAY ===== -->
+  <div class="overlay hidden" id="overlay-giveup">
+    <div class="ov-icon">💔</div>
+    <div class="ov-title">ギブアップ</div>
+    <div class="ov-score" id="gu-score"></div>
+    <button class="view-board-btn" id="btn-view-board-gu">📷 盤面を見る</button>
+    <button class="play-btn" id="btn-retry-gu" style="margin-top:12px;">もう一度 💕</button>
+    <button class="secondary-btn" id="btn-to-start-gu">スタート画面へ</button>
+    <a href="index.html" class="secondary-btn">← トップにもどる</a>
+  </div>
+
+  <!-- ===== PRESENT OVERLAY ===== -->
+  <div id="present-overlay" style="display:none;position:absolute;inset:0;z-index:50;background:rgba(8,1,10,0.97);align-items:center;justify-content:center;padding:24px;overflow:hidden;">
+    <canvas id="present-bg-canvas" style="position:absolute;inset:0;pointer-events:none;"></canvas>
+    <div id="present-inner" style="position:relative;z-index:1;text-align:center;max-width:360px;width:100%;display:flex;flex-direction:column;align-items:center;">
+      <div id="present-phase-box" style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+        <div id="present-hint" style="font-family:'Zen Kurenaido',cursive;font-size:14px;color:#fba8d0;letter-spacing:2px;animation:hintPulse 1.5s ease-in-out infinite;">タップして開けてね 🎀</div>
+        <div id="present-box-wrap" style="cursor:pointer;position:relative;padding:20px;-webkit-tap-highlight-color:transparent;user-select:none;">
+          <div class="tap-ring"></div><div class="tap-ring"></div><div class="tap-ring"></div>
+          <svg id="present-box-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:180px;height:180px;filter:drop-shadow(0 0 32px rgba(212,168,76,0.7)) drop-shadow(0 0 60px rgba(244,114,182,0.4));">
+            <defs>
+              <linearGradient id="pb-body" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f9a8d4"/><stop offset="100%" stop-color="#e879a0"/></linearGradient>
+              <linearGradient id="pb-lid"  x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fce7f3"/><stop offset="100%" stop-color="#fba8d0"/></linearGradient>
+              <linearGradient id="pb-ribbon" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f0cc78"/><stop offset="100%" stop-color="#d4a84c"/></linearGradient>
+            </defs>
+            <ellipse cx="80" cy="150" rx="52" ry="7" fill="rgba(0,0,0,0.25)"/>
+            <rect x="20" y="74" width="120" height="76" rx="6" fill="url(#pb-body)"/>
+            <rect x="14" y="58" width="132" height="24" rx="6" fill="url(#pb-lid)"/>
+            <rect x="72" y="74" width="16" height="76" fill="url(#pb-ribbon)" opacity="0.85"/>
+            <rect x="14" y="64" width="132" height="12" fill="url(#pb-ribbon)" opacity="0.85"/>
+            <ellipse cx="64" cy="58" rx="24" ry="13" fill="url(#pb-ribbon)" transform="rotate(-30 64 58)" opacity="0.9"/>
+            <ellipse cx="96" cy="58" rx="24" ry="13" fill="url(#pb-ribbon)" transform="rotate(30 96 58)" opacity="0.9"/>
+            <circle cx="80" cy="58" r="10" fill="#f0cc78"/>
+            <circle cx="80" cy="58" r="5.5" fill="#d4a84c"/>
+            <ellipse cx="40" cy="64" rx="11" ry="4.5" fill="white" opacity="0.22" transform="rotate(-15 40 64)"/>
+          </svg>
+        </div>
+      </div>
+      <div id="present-phase-reveal" style="display:none;flex-direction:column;align-items:center;gap:14px;overflow-y:auto;max-height:90vh;padding:8px 0;">
+        <div id="present-reveal-icon" style="font-size:52px;">🎁</div>
+        <div id="present-reveal-title" style="font-family:'Zen Kurenaido',cursive;font-size:clamp(13px,3.5vw,17px);color:#f0cc78;text-shadow:0 0 30px rgba(212,168,76,0.8);letter-spacing:2px;line-height:1.5;white-space:nowrap;"></div>
+        <div id="present-reveal-img-wrap" style="display:none;width:100%;max-width:340px;border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.5);">
+          <img id="present-reveal-img" src="" alt="" style="width:100%;display:block;max-height:52vh;object-fit:contain;">
+        </div>
+        <div style="background:linear-gradient(135deg,rgba(212,168,76,0.12),rgba(244,114,182,0.08));border:1px solid rgba(212,168,76,0.35);border-radius:16px;padding:18px 22px;max-width:300px;width:100%;">
+          <div id="present-reveal-msg" style="font-size:14px;color:#fce7f3;line-height:2.2;opacity:0.95;white-space:pre-line;"></div>
+        </div>
+        <button id="present-reveal-close" style="background:linear-gradient(135deg,#e879a0,#f9a8d4,#e879a0);color:white;border:none;border-radius:999px;padding:14px 44px;font-family:'Zen Kurenaido',cursive;font-size:15px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 24px rgba(232,121,160,0.6);-webkit-tap-highlight-color:transparent;">とじる 💕</button>
+        <a href="index.html" style="display:inline-block;margin-top:10px;font-size:12px;color:rgba(252,231,243,0.45);letter-spacing:1px;text-decoration:none;border:1px solid rgba(244,114,182,0.22);border-radius:999px;padding:7px 20px;-webkit-tap-highlight-color:transparent;">← メイン画面にもどる</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /game-wrap -->
+
+<script>
+/* =============================================
+   🎁 全難易度クリアプレゼント設定
+   ─────────────────────────────────────────
+   全ての難易度をクリアしたときに受け取れるプレゼント。
+   スタート画面のボタンから受け取る仕様。
+============================================= */
+const MEMORY_PRESENT = {
+  date:    'memory-all-clear',
+  title:   '思い出神経衰弱クリア報酬🃏',
+  message: 'バレンタインを思い出すな🏐\n土曜日から販売開始らしい！！\n一緒に引きにいくぞっ🔥',
+  image:   'haikyu_ticket.jpg'
+};
+
+/* =============================================
+   📸 写真リスト（index.html の PHOTO_LIST と同じ内容）
+   ※ 実際に使うのはガチャで解放した写真のみ
+============================================= */
+const PHOTO_LIST = [
+  "1765901562592.jpg",
+  "1767216955658.jpg",
+  "1769695084506.jpg",
+  "1774179129600.jpg",
+  "1777989227181.jpg",
+  "1778936032100.jpg",
+  "3551659479.jpg",
+  "BeautyPlus_20251226000645754_save.jpg",
+  "BeautyPlus_20260131173101462_save.jpg",
+  "BeautyPlus_20260207151815100_0_save.jpg",
+  "BeautyPlus_20260214181010716_0_save.jpg",
+  "BeautyPlus_20260320125542692_0_save.jpg",
+  "BeautyPlus_20260320150255059_0_save.jpg",
+  "BeautyPlus_20260329125425893_0_save.jpg",
+  "BeautyPlus_20260405145128566_0_save.jpg",
+  "BeautyPlus_20260418161756023_0_save.jpg",
+  "BeautyPlus_20260425185912785_0_save.jpg",
+  "IMG_20251017_221706795.jpg",
+  "IMG_20251220_142237578.jpg",
+  "IMG_20251220_183333864.jpg",
+  "IMG_20251230_215325467.jpg",
+  "IMG_20260117_190001549.jpg",
+  "IMG_20260221_193236180.jpg",
+  "IMG_20260320_202642602.jpg",
+  "IMG_20260429_133924772.jpg",
+  "PAIRY_IMG_1767017712828.jpg",
+  "Pictlink_20260215_025550 (5).jpg",
+  "Pictlink_20260228_170639.jpg",
+  "Pictlink_20260418_161448.jpg",
+  "Screenshot_20251217-214308.png",
+];
+
+/* =============================================
+   設定
+============================================= */
+const TIME_LIMIT = 30;
+const DIFFICULTIES = {
+  easy:     { label:'かんたん',   pairs:4  },
+  normal:   { label:'ふつう',     pairs:6  },
+  hard:     { label:'むずかしい', pairs:8  },
+  gekimuzu: { label:'激ムズ',     pairs:10 },
+};
+const BEST_KEY_PREFIX = 'mem_best_v1_';
+const CLEARED_KEY     = 'mem_cleared_v1';
+const K_PULLED        = 'bdg_pulled_v2';
+const K_OPENED        = 'bdg_opened_presents_v1';
+
+/* =============================================
+   ストレージユーティリティ
+============================================= */
+function getUnlockedPhotos() {
+  try {
+    const pulled = JSON.parse(localStorage.getItem(K_PULLED)) || [];
+    return [...new Set(pulled)]
+      .filter(idx => idx >= 0 && idx < PHOTO_LIST.length)
+      .map(idx => PHOTO_LIST[idx]);
+  } catch { return []; }
+}
+function getBest(diff) {
+  try { return JSON.parse(localStorage.getItem(BEST_KEY_PREFIX + diff)) || null; } catch { return null; }
+}
+function setBest(diff, data) { localStorage.setItem(BEST_KEY_PREFIX + diff, JSON.stringify(data)); }
+function getCleared() {
+  try { return JSON.parse(localStorage.getItem(CLEARED_KEY)) || {}; } catch { return {}; }
+}
+function markCleared(diff) {
+  const c = getCleared(); c[diff] = true;
+  localStorage.setItem(CLEARED_KEY, JSON.stringify(c));
+}
+function isAllCleared() {
+  const c = getCleared();
+  return Object.keys(DIFFICULTIES).every(d => c[d]);
+}
+function getOpened() { try { return JSON.parse(localStorage.getItem(K_OPENED)) || []; } catch { return []; } }
+function setOpened(a) { localStorage.setItem(K_OPENED, JSON.stringify(a)); }
+function fmtSec(s) { return `${s}秒`; }
+function bestStr(b) { return b ? `${b.moves}手 / ${b.timeLeft}秒残し` : '--'; }
+
+/* =============================================
+   スタート画面の更新
+============================================= */
+function updateStartScreen() {
+  const unlocked = getUnlockedPhotos();
+  const cleared  = getCleared();
+  let anyPlayable = false;
+
+  Object.keys(DIFFICULTIES).forEach(diff => {
+    const { pairs } = DIFFICULTIES[diff];
+    const btn     = document.querySelector(`.diff-btn[data-diff="${diff}"]`);
+    const infoEl  = document.getElementById('diff-info-' + diff);
+    const clearEl = document.getElementById('diff-cleared-' + diff);
+    const enough  = unlocked.length >= pairs;
+
+    btn.disabled = !enough;
+    btn.classList.toggle('selected', diff === currentDiff && enough);
+
+    if (enough) {
+      anyPlayable = true;
+      const b = getBest(diff);
+      infoEl.textContent = b ? `🏆 ${bestStr(b)}` : '';
+    } else {
+      infoEl.textContent = `🔒 あと${pairs - unlocked.length}枚`;
+    }
+    cleared[diff] ? clearEl.classList.remove('hidden') : clearEl.classList.add('hidden');
+  });
+
+  // 選択中が無効なら最初の利用可能な難易度を選ぶ
+  const selectedBtn = document.querySelector(`.diff-btn[data-diff="${currentDiff}"]`);
+  if (selectedBtn && selectedBtn.disabled) {
+    const first = Object.keys(DIFFICULTIES).find(d => unlocked.length >= DIFFICULTIES[d].pairs);
+    if (first) selectDiff(first);
+  }
+
+  // アンロックヒント
+  const hint = document.getElementById('unlock-hint');
+  hint.style.display = anyPlayable ? 'none' : 'block';
+  hint.textContent = 'ガチャで写真を解放するとあそべるよ 💕';
+
+  // 全クリア進捗
+  const clearedCount = Object.keys(DIFFICULTIES).filter(d => cleared[d]).length;
+  const progEl = document.getElementById('clear-progress');
+  progEl.textContent = clearedCount > 0 ? `${clearedCount} / ${Object.keys(DIFFICULTIES).length} 難易度クリア` : '';
+
+  // 全クリアプレゼントボタン
+  const pBtn = document.getElementById('present-view-btn');
+  if (isAllCleared()) {
+    pBtn.classList.remove('hidden');
+    const received = getOpened().find(p => p.date === MEMORY_PRESENT.date);
+    if (received) {
+      pBtn.textContent = '🎁 受け取り済み';
+      pBtn.disabled = true;
+      pBtn.style.opacity = '0.45';
+      pBtn.style.cursor = 'default';
+      pBtn.style.animation = 'none';
+      pBtn.style.boxShadow = 'none';
+    } else {
+      pBtn.textContent = '🎁 プレゼントを受け取る';
+      pBtn.disabled = false;
+      pBtn.style.opacity = '';
+      pBtn.style.cursor = '';
+      pBtn.style.animation = '';
+      pBtn.style.boxShadow = '';
+    }
+  } else {
+    pBtn.classList.add('hidden');
+  }
+
+  // はじめるボタン有効/無効
+  document.getElementById('btn-start').disabled = unlocked.length < DIFFICULTIES[currentDiff].pairs;
+}
+
+/* =============================================
+   難易度選択
+============================================= */
+let currentDiff = 'easy';
+function selectDiff(diff) {
+  currentDiff = diff;
+  document.querySelectorAll('.diff-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.diff === diff && !b.disabled);
+  });
+}
+document.querySelectorAll('.diff-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.disabled) return;
+    selectDiff(btn.dataset.diff);
+    updateStartScreen();
+  });
+});
+
+/* =============================================
+   デッキ構築（ガチャ済み写真のみ）
+============================================= */
+function buildDeck(diff) {
+  const { pairs } = DIFFICULTIES[diff];
+  const available = [...getUnlockedPhotos()].sort(() => Math.random() - 0.5);
+  const photos    = available.slice(0, pairs);
+  return [...photos, ...photos]
+    .map((file, i) => ({ pairId: i % pairs, file, flipped: false, matched: false }))
+    .sort(() => Math.random() - 0.5);
+}
+
+/* =============================================
+   グリッド描画
+============================================= */
+let deck = [];
+function renderGrid() {
+  const grid = document.getElementById('card-grid');
+  grid.innerHTML = '';
+  deck.forEach((card, index) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.dataset.index = index;
+    el.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face card-back"><div class="card-back-heart">💕</div></div>
+        <div class="card-face card-front">
+          <div class="card-photo"><img src="photos/${card.file}" alt="思い出" loading="lazy"></div>
+          <div class="card-bottom">💕</div>
+        </div>
+      </div>`;
+    el.addEventListener('click', () => onCardClick(index));
+    grid.appendChild(el);
+  });
+}
+
+/* =============================================
+   カード操作
+============================================= */
+function setCardFlipped(i, on) {
+  const el = document.querySelector(`.card[data-index="${i}"]`);
+  if (el) { on ? el.classList.add('flipped') : el.classList.remove('flipped'); }
+}
+function setCardMatched(i) {
+  const el = document.querySelector(`.card[data-index="${i}"]`);
+  if (el) { el.classList.add('matched'); el.classList.remove('flipped'); }
+}
+
+let flippedIdx = [], matchedCount = 0, moves = 0, isLocked = false, currentPairs = 0;
+
+function onCardClick(index) {
+  if (isLocked) return;
+  const card = deck[index];
+  if (card.flipped || card.matched) return;
+  if (flippedIdx.length >= 2) return;
+
+  card.flipped = true;
+  setCardFlipped(index, true);
+  flippedIdx.push(index);
+
+  if (flippedIdx.length === 2) {
+    moves++;
+    updateHUD();
+    isLocked = true;
+    const [a, b] = flippedIdx;
+
+    if (deck[a].pairId === deck[b].pairId) {
+      setTimeout(() => {
+        deck[a].matched = true; deck[b].matched = true;
+        setCardMatched(a); setCardMatched(b);
+        matchedCount++;
+        flippedIdx = [];
+        isLocked = false;
+        if (matchedCount === currentPairs) triggerClear();
+      }, 300);
+    } else {
+      setTimeout(() => {
+        deck[a].flipped = false; deck[b].flipped = false;
+        setCardFlipped(a, false); setCardFlipped(b, false);
+        flippedIdx = [];
+        isLocked = false;
+      }, 900);
+    }
+  }
+}
+
+/* =============================================
+   タイマー（カウントダウン30秒）
+============================================= */
+let timeLeft = TIME_LIMIT, timerInterval = null;
+
+function startTimer() {
+  timeLeft = TIME_LIMIT;
+  updateTimerDisplay();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) { clearInterval(timerInterval); triggerTimeUp(); }
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerInterval); }
+
+function updateTimerDisplay() {
+  const el   = document.getElementById('hud-timer');
+  const bar  = document.getElementById('timer-bar');
+  const warn = timeLeft <= 10;
+  const half = timeLeft <= 15 && timeLeft > 10;
+
+  el.textContent = timeLeft;
+  el.classList.toggle('warn', warn);
+  bar.style.width = `${(timeLeft / TIME_LIMIT) * 100}%`;
+  bar.classList.toggle('warn', warn);
+  bar.classList.toggle('halfwarn', half);
+
+  // ちょうど15秒になった瞬間にエフェクト発動
+  if (timeLeft === 15) triggerHalfwarnEffect();
+}
+
+function triggerHalfwarnEffect() {
+  const wrap = document.getElementById('game-wrap');
+
+  // 赤ビネット（以降ずっと表示）
+  wrap.classList.add('halfwarn');
+
+  // スクリーンシェイク
+  wrap.classList.remove('screen-shake');
+  requestAnimationFrame(() => wrap.classList.add('screen-shake'));
+  wrap.addEventListener('animationend', () => wrap.classList.remove('screen-shake'), { once: true });
+
+  // タイマーバウンス
+  const timerEl = document.getElementById('hud-timer');
+  timerEl.classList.remove('timer-bounce');
+  requestAnimationFrame(() => timerEl.classList.add('timer-bounce'));
+  timerEl.addEventListener('animationend', () => timerEl.classList.remove('timer-bounce'), { once: true });
+
+  // 赤フラッシュ
+  const flash = document.getElementById('flash-overlay');
+  flash.classList.remove('active');
+  requestAnimationFrame(() => flash.classList.add('active'));
+  flash.addEventListener('animationend', () => flash.classList.remove('active'), { once: true });
+
+  // 「急いで！」メッセージ
+  const msg = document.createElement('div');
+  msg.style.cssText = 'position:fixed;top:50%;left:50%;font-family:"Zen Kurenaido",cursive;font-size:clamp(24px,7vw,36px);color:#fb7185;text-shadow:0 0 24px rgba(251,113,133,0.9),0 0 48px rgba(251,113,133,0.5);pointer-events:none;z-index:100;animation:halfwarnMsg 1.3s ease-out forwards;letter-spacing:4px;white-space:nowrap;';
+  msg.textContent = '⚡ 急いで！ ⚡';
+  document.body.appendChild(msg);
+  msg.addEventListener('animationend', () => msg.remove());
+}
+
+function updateHUD() {
+  document.getElementById('hud-moves').textContent = `👆 ${moves}手`;
+}
+
+/* =============================================
+   ゲーム開始
+============================================= */
+function startGame(diff) {
+  currentDiff  = diff || currentDiff;
+  currentPairs = DIFFICULTIES[currentDiff].pairs;
+  deck         = buildDeck(currentDiff);
+  flippedIdx   = []; matchedCount = 0; moves = 0; isLocked = false;
+
+  updateHUD();
+  document.getElementById('game-wrap').classList.remove('halfwarn','screen-shake');
+  document.getElementById('flash-overlay').classList.remove('active');
+  document.getElementById('timer-bar').classList.remove('halfwarn','warn');
+  renderGrid();
+  exitBoardView();
+
+  ['overlay-start','overlay-clear','overlay-timeup','overlay-giveup'].forEach(id =>
+    document.getElementById(id).classList.add('hidden')
+  );
+  document.getElementById('present-overlay').style.display = 'none';
+  stopPresentBg();
+  document.getElementById('giveup-btn').classList.add('show');
+  startTimer();
+}
+
+/* =============================================
+   クリア
+============================================= */
+function triggerClear() {
+  stopTimer();
+  isLocked = true;
+  document.getElementById('giveup-btn').classList.remove('show');
+
+  const score   = { moves, timeLeft };
+  const best    = getBest(currentDiff);
+  const isNew   = !best || moves < best.moves || (moves === best.moves && timeLeft > best.timeLeft);
+  if (isNew) setBest(currentDiff, score);
+
+  const prevAllClear = isAllCleared();
+  markCleared(currentDiff);
+  const nowAllClear  = isAllCleared();
+
+  document.getElementById('cl-score').textContent = `${moves}手 / ${timeLeft}秒残し`;
+  document.getElementById('cl-best').textContent  = `ベスト：${bestStr(getBest(currentDiff))}`;
+  isNew ? document.getElementById('cl-new-record').classList.remove('hidden')
+        : document.getElementById('cl-new-record').classList.add('hidden');
+
+  // 全クリア達成メッセージ（初回のみ）
+  const acMsg = document.getElementById('cl-allclear-msg');
+  if (nowAllClear && !prevAllClear) {
+    acMsg.classList.remove('hidden');
+  } else {
+    acMsg.classList.add('hidden');
+  }
+
+  launchConfetti();
+  document.getElementById('overlay-clear').classList.remove('hidden');
+}
+
+/* =============================================
+   タイムアップ
+============================================= */
+function triggerTimeUp() {
+  isLocked = true;
+  document.getElementById('giveup-btn').classList.remove('show');
+  document.getElementById('tu-score').textContent = `${matchedCount} / ${currentPairs} ペア成立`;
+  document.getElementById('overlay-timeup').classList.remove('hidden');
+}
+
+/* =============================================
+   ギブアップ
+============================================= */
+function triggerGiveup() {
+  if (!confirm('ギブアップしますか？')) return;
+  stopTimer();
+  isLocked = true;
+  document.getElementById('giveup-btn').classList.remove('show');
+  document.getElementById('gu-score').textContent = `${matchedCount} / ${currentPairs} ペア成立`;
+  document.getElementById('overlay-giveup').classList.remove('hidden');
+}
+
+/* =============================================
+   盤面ビュー（結果表示）
+============================================= */
+let lbPhotos = [], lbCurrentIdx = 0;
+
+function enterBoardView() {
+  ['overlay-clear','overlay-timeup','overlay-giveup'].forEach(id =>
+    document.getElementById(id).classList.add('hidden')
+  );
+  // マッチ済み写真を収集（ペア1枚ずつ）
+  const seen = new Set();
+  lbPhotos = deck.filter(c => {
+    if (!c.matched || seen.has(c.pairId)) return false;
+    seen.add(c.pairId); return true;
+  }).map(c => c.file);
+
+  document.getElementById('card-grid').classList.add('board-active');
+  document.getElementById('timer-bar-wrap').style.display = 'none';
+  document.getElementById('board-bar').classList.remove('hidden');
+
+  document.querySelectorAll('.card.matched').forEach(el => {
+    el.addEventListener('click', boardCardClick);
+  });
+}
+
+function boardCardClick() {
+  const file = deck[parseInt(this.dataset.index)].file;
+  const idx  = lbPhotos.indexOf(file);
+  if (idx >= 0) openLightbox(idx);
+}
+
+function exitBoardView() {
+  document.getElementById('card-grid').classList.remove('board-active');
+  document.getElementById('timer-bar-wrap').style.display = '';
+  document.getElementById('board-bar').classList.add('hidden');
+  document.getElementById('lb-overlay').classList.add('hidden');
+  document.querySelectorAll('.card.matched').forEach(el =>
+    el.removeEventListener('click', boardCardClick)
+  );
+}
+
+function goToStart() {
+  exitBoardView();
+  stopTimer();
+  isLocked = false;
+  document.getElementById('giveup-btn').classList.remove('show');
+  ['overlay-clear','overlay-timeup','overlay-giveup'].forEach(id =>
+    document.getElementById(id).classList.add('hidden')
+  );
+  document.getElementById('overlay-start').classList.remove('hidden');
+  updateStartScreen();
+}
+
+/* =============================================
+   ライトボックス
+============================================= */
+function openLightbox(idx) {
+  lbCurrentIdx = idx; renderLightbox();
+  document.getElementById('lb-overlay').classList.remove('hidden');
+}
+function renderLightbox() {
+  document.getElementById('lb-img').src = `photos/${lbPhotos[lbCurrentIdx]}`;
+  document.getElementById('lb-counter').textContent = `${lbCurrentIdx + 1} / ${lbPhotos.length}`;
+}
+function lbNav(dir) {
+  if (lbPhotos.length === 0) return;
+  lbCurrentIdx = (lbCurrentIdx + dir + lbPhotos.length) % lbPhotos.length;
+  renderLightbox();
+}
+document.getElementById('lb-close').addEventListener('click', () =>
+  document.getElementById('lb-overlay').classList.add('hidden')
+);
+document.getElementById('lb-prev').addEventListener('click', () => lbNav(-1));
+document.getElementById('lb-next').addEventListener('click', () => lbNav(1));
+document.getElementById('lb-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('lb-overlay'))
+    document.getElementById('lb-overlay').classList.add('hidden');
+});
+document.addEventListener('keydown', e => {
+  if (document.getElementById('lb-overlay').classList.contains('hidden')) return;
+  if (e.key === 'Escape') document.getElementById('lb-overlay').classList.add('hidden');
+  if (e.key === 'ArrowLeft')  lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
+});
+
+/* =============================================
+   ボタンイベント
+============================================= */
+document.getElementById('btn-start').addEventListener('click', () => {
+  if (getUnlockedPhotos().length < DIFFICULTIES[currentDiff].pairs) return;
+  startGame(currentDiff);
+});
+document.getElementById('btn-retry').addEventListener('click',    () => startGame(currentDiff));
+document.getElementById('btn-retry-tu').addEventListener('click', () => startGame(currentDiff));
+document.getElementById('btn-retry-gu').addEventListener('click', () => startGame(currentDiff));
+
+document.getElementById('btn-to-start-clear').addEventListener('click', goToStart);
+document.getElementById('btn-to-start-tu').addEventListener('click',    goToStart);
+document.getElementById('btn-to-start-gu').addEventListener('click',    goToStart);
+document.getElementById('board-close-btn').addEventListener('click',    goToStart);
+
+document.getElementById('btn-view-board-clear').addEventListener('click', enterBoardView);
+document.getElementById('btn-view-board-tu').addEventListener('click',    enterBoardView);
+document.getElementById('btn-view-board-gu').addEventListener('click',    enterBoardView);
+
+document.getElementById('giveup-btn').addEventListener('click', triggerGiveup);
+
+document.getElementById('present-view-btn').addEventListener('click', () => {
+  document.getElementById('overlay-start').classList.add('hidden');
+  showPresentOverlay(MEMORY_PRESENT);
+});
+
+/* =============================================
+   🎁 プレゼントボックス
+============================================= */
+let presentBgRaf = null;
+function startPresentBg() {
+  const canvas = document.getElementById('present-bg-canvas'), cx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  let particles = [], timer = 0;
+  function burst() {
+    const bx=Math.random()*canvas.width,by=Math.random()*canvas.height*0.65;
+    const cols=['#f472b6','#fba8d0','#f0cc78','#fce7f3','#fb7185','#d4a84c'];
+    for(let i=0;i<22;i++){
+      const a=Math.random()*Math.PI*2,sp=1.5+Math.random()*4;
+      particles.push({x:bx,y:by,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2.5,color:cols[~~(Math.random()*cols.length)],life:1,size:3+Math.random()*5});
+    }
+  }
+  function frame(){
+    cx.clearRect(0,0,canvas.width,canvas.height);
+    timer++;if(timer%35===0)burst();
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.1;p.life-=0.016;
+      if(p.life<=0){particles.splice(i,1);continue;}
+      cx.globalAlpha=p.life;cx.fillStyle=p.color;cx.beginPath();cx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2);cx.fill();
+    }
+    cx.globalAlpha=1;presentBgRaf=requestAnimationFrame(frame);
+  }
+  frame();
+}
+function stopPresentBg(){ cancelAnimationFrame(presentBgRaf); }
+
+function showPresentOverlay(pData) {
+  const overlay=document.getElementById('present-overlay'),
+        phBox=document.getElementById('present-phase-box'),
+        phReveal=document.getElementById('present-phase-reveal'),
+        box=document.getElementById('present-box-svg');
+  phBox.style.display='flex';phReveal.style.display='none';
+  box.className='';overlay.style.display='flex';
+
+  let shakeInt=setInterval(()=>{
+    box.classList.add('box-shaking');
+    setTimeout(()=>box.classList.remove('box-shaking'),500);
+  },2200);
+
+  function openBox(){
+    clearInterval(shakeInt);
+    document.getElementById('present-box-wrap').removeEventListener('click',openBox);
+    box.classList.add('box-bursting');
+    launchConfetti(130);startPresentBg();
+    setTimeout(()=>{
+      phBox.style.display='none';
+      document.getElementById('present-reveal-title').textContent=pData.title||'プレゼント 🎁';
+      document.getElementById('present-reveal-msg').textContent=pData.message||'';
+      const iw=document.getElementById('present-reveal-img-wrap'),ri=document.getElementById('present-reveal-img');
+      if(pData.image){iw.style.display='block';ri.src='photos/'+pData.image;}else{iw.style.display='none';}
+      phReveal.style.display='flex';phReveal.classList.add('show');
+      const opened=getOpened();
+      if(!opened.find(p=>p.date===pData.date)){
+        opened.push({date:pData.date,title:pData.title||'プレゼント',message:pData.message||'',image:pData.image||''});
+        setOpened(opened);
+      }
+      setTimeout(()=>launchConfetti(80),700);setTimeout(()=>launchConfetti(60),1500);
+    },700);
+  }
+  document.getElementById('present-box-wrap').addEventListener('click',openBox);
+}
+
+document.getElementById('present-reveal-close').addEventListener('click',()=>{
+  stopPresentBg();
+  document.getElementById('present-overlay').style.display='none';
+  goToStart();
+});
+
+/* =============================================
+   🎊 コンフェッティ
+============================================= */
+function launchConfetti(n=80){
+  const colors=['#f472b6','#fba8d0','#fce7f3','#fb7185','#ffffff','#f0cc78','#fbcfe8'];
+  for(let i=0;i<n;i++){
+    const el=document.createElement('div');el.className='confetti-piece';
+    const sz=6+Math.random()*9;
+    el.style.cssText=`left:${Math.random()*100}vw;width:${sz}px;height:${sz}px;background:${colors[~~(Math.random()*colors.length)]};border-radius:${Math.random()<.6?'50%':'2px'};animation-duration:${2.4+Math.random()*2}s;animation-delay:${Math.random()*.7}s;`;
+    document.body.appendChild(el);el.addEventListener('animationend',()=>el.remove());
+  }
+}
+
+/* =============================================
+   🔧 デバッグモード（クリア画面スコアを5回タップ）
+============================================= */
+let debugTap=0,debugTimer=null;
+const debugHint=document.getElementById('debug-hint');
+
+document.getElementById('cl-score').addEventListener('click',()=>{
+  debugTap++;
+  clearTimeout(debugTimer);
+  debugTimer=setTimeout(()=>{debugTap=0;debugHint.textContent='';},2000);
+  debugHint.textContent=['・','・・','・・・','・・・・','debug'][Math.min(debugTap-1,4)]||'';
+  if(debugTap>=5){debugTap=0;clearTimeout(debugTimer);openDebugMenu();}
+});
+
+function openDebugMenu(){
+  debugHint.textContent='';
+  const existing=document.getElementById('debug-overlay');if(existing)existing.remove();
+  const panel=document.createElement('div');
+  panel.id='debug-overlay';
+  panel.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(5,1,8,0.96);backdrop-filter:blur(14px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:32px 24px;';
+
+  const lbl=document.createElement('div');
+  lbl.style.cssText='font-size:11px;letter-spacing:3px;color:rgba(212,168,76,0.6);';
+  lbl.textContent='🔧 DEBUG MODE';panel.appendChild(lbl);
+
+  function makeBtn(label,color,bg,fn){
+    const b=document.createElement('button');
+    b.style.cssText=`width:264px;padding:12px 20px;border-radius:10px;background:${bg};border:1px solid ${color};color:${color};font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:1px;cursor:pointer;-webkit-tap-highlight-color:transparent;`;
+    b.textContent=label;b.onclick=fn;panel.appendChild(b);
+  }
+  makeBtn('🎉 クリア演出を確認','#e879a0','rgba(232,121,160,0.2)',()=>{
+    panel.remove();document.getElementById('overlay-clear').classList.remove('hidden');launchConfetti();
+  });
+  makeBtn('🎁 プレゼント演出を確認','#f0cc78','rgba(212,168,76,0.15)',()=>{
+    panel.remove();document.getElementById('overlay-clear').classList.add('hidden');showPresentOverlay(MEMORY_PRESENT);
+  });
+  makeBtn('✅ 全難易度クリアにする','#fba8d0','rgba(244,114,182,0.12)',()=>{
+    Object.keys(DIFFICULTIES).forEach(d=>markCleared(d));
+    updateStartScreen();panel.remove();showToast('全難易度クリア済みにしました');
+  });
+  makeBtn('🗑 全記録をリセット','#fda4af','rgba(251,113,133,0.12)',()=>{
+    Object.keys(DIFFICULTIES).forEach(d=>localStorage.removeItem(BEST_KEY_PREFIX+d));
+    localStorage.removeItem(CLEARED_KEY);
+    updateStartScreen();panel.remove();showToast('記録をリセットしました');
+  });
+
+  const cl=document.createElement('button');
+  cl.style.cssText="background:none;border:1px solid rgba(244,114,182,0.25);border-radius:999px;color:var(--dim);padding:9px 30px;font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:2px;cursor:pointer;margin-top:4px;";
+  cl.textContent='とじる';cl.onclick=()=>panel.remove();panel.appendChild(cl);
+  document.body.appendChild(panel);
+}
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(212,168,76,0.2);border:1px solid rgba(212,168,76,0.4);border-radius:999px;color:var(--gold-l);padding:10px 24px;font-size:13px;letter-spacing:1px;z-index:999;white-space:nowrap;';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);
+}
+
+/* ===== 初期化 ===== */
+updateStartScreen();
+</script>
+</body>
+</html>
