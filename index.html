@@ -20,12 +20,13 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);mi
 .header-deco::before,.header-deco::after{content:'';width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--pink),transparent);}
 .header-deco span{font-size:14px;color:var(--pink-l);letter-spacing:2px;}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
-#games-section{width:100%;max-width:440px;margin-bottom:28px;display:grid;grid-template-columns:1fr 1fr;gap:10px;animation:fadeDown 1s 0.1s ease both;}
-.game-card{background:linear-gradient(135deg,rgba(244,114,182,0.12),rgba(212,168,76,0.1));border:1px solid var(--border);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;transition:transform 0.15s,box-shadow 0.2s;-webkit-tap-highlight-color:transparent;}
+#games-section{width:100%;max-width:660px;margin-bottom:28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;animation:fadeDown 1s 0.1s ease both;}
+.game-card{background:linear-gradient(135deg,rgba(244,114,182,0.12),rgba(212,168,76,0.1));border:1px solid var(--border);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;transition:transform 0.15s,box-shadow 0.2s;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;}
 .game-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(244,114,182,0.2);}
 .game-card-icon{font-size:28px;flex-shrink:0;}
 .game-card-title{font-family:'Zen Kurenaido',cursive;font-size:13px;color:var(--cream);letter-spacing:1px;}
 .game-card-sub{font-size:11px;color:var(--dim);margin-top:2px;}
+.game-card-badge{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,var(--pink-d),var(--pink));color:white;font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:999px;}
 #daily-msg{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--pink-l);text-align:center;letter-spacing:1px;opacity:0.9;padding:6px 20px 20px;animation:fadeDown 1s 0.1s ease both;line-height:1.8;}
 #countdown-wrap{margin-bottom:48px;animation:fadeDown 1s 0.15s ease both;}
 .cd-label-top{text-align:center;font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:3px;color:var(--pink-l);margin-bottom:16px;opacity:0.8;}
@@ -118,7 +119,6 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);mi
 @keyframes lbIn{from{opacity:0;}to{opacity:1;}}
 #lightbox-inner{position:relative;max-width:min(380px,88vw);width:100%;animation:lbSlide 0.35s cubic-bezier(0.22,1,0.36,1);}
 @keyframes lbSlide{from{transform:scale(0.88) translateY(24px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
-/* ライトボックスはポラロイドと同じスタイル */
 .lb-polaroid{background:#fff;padding:14px 14px 70px;box-shadow:0 24px 80px rgba(0,0,0,0.7);width:100%;position:relative;}
 .lb-polaroid img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;}
 .lb-demo{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,#fce7f3,#fbcfe8,#f9a8d4);display:flex;align-items:center;justify-content:center;font-size:64px;}
@@ -162,7 +162,6 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);mi
 #present-reveal-icon{font-size:52px;animation:iconBounce 0.6s cubic-bezier(0.22,1,0.36,1) both;}
 @keyframes iconBounce{from{transform:scale(0) rotate(-20deg);}to{transform:scale(1) rotate(0);}}
 #present-reveal-title{font-family:'Zen Kurenaido',cursive;font-size:clamp(20px,5vw,30px);color:var(--gold-l);text-shadow:0 0 30px rgba(212,168,76,0.8),0 0 60px rgba(212,168,76,0.4);letter-spacing:2px;line-height:1.5;}
-/* プレゼント画像（ポラロイド風） */
 #present-reveal-img-wrap{width:100%;max-width:340px;border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.5);display:none;}
 #present-reveal-img{width:100%;display:block;object-fit:contain;}
 #present-reveal-dl-btn{display:none;align-items:center;gap:8px;background:rgba(212,168,76,0.15);border:1px solid rgba(212,168,76,0.4);border-radius:999px;color:var(--gold-l);padding:10px 28px;font-family:'Zen Kurenaido',cursive;font-size:13px;letter-spacing:2px;cursor:pointer;transition:background 0.2s,transform 0.15s;}
@@ -306,6 +305,11 @@ footer{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;c
     <a class="game-card" href="memory.html">
       <div class="game-card-icon">🃏</div>
       <div><div class="game-card-title">思い出神経衰弱</div><div class="game-card-sub">写真でトランプ 💕</div></div>
+    </a>
+    <a class="game-card" href="puzzle.html">
+      <span class="game-card-badge">NEW</span>
+      <div class="game-card-icon">🧩</div>
+      <div><div class="game-card-title">スライドパズル</div><div class="game-card-sub">写真を並べ替えよう 🧩</div></div>
     </a>
   </div>
 
@@ -508,13 +512,7 @@ const setOpened=a=>localStorage.setItem(K_OPENED,JSON.stringify(a));
 function daysBetween(a,b){const d1=new Date(a),d2=new Date(b);d1.setHours(0,0,0,0);d2.setHours(0,0,0,0);return Math.round((d2-d1)/86400000);}
 function creditPulls(){const today=todayStr(),last=localStorage.getItem(K_LAST_CREDITED);if(!last){setPending(getPending()+1);localStorage.setItem(K_LAST_CREDITED,today);}else{const diff=daysBetween(last,today);if(diff>0){setPending(getPending()+diff);localStorage.setItem(K_LAST_CREDITED,today);}}}
 
-/* PHOTOS
-   ─────────────────────────────────────────
-   写真を追加・削除するときはこの配列を編集してください。
-   { file: "ファイル名", note: "デフォルトコメント（省略可）" }
-   または文字列だけでもOK: "ファイル名"
-   ─────────────────────────────────────────
-*/
+/* PHOTOS */
 const PHOTO_LIST = [
   "1765901562592.jpg",
   "1767216955658.jpg",
@@ -649,9 +647,7 @@ document.getElementById('lb-next').addEventListener('click',()=>lbNav(1));
 document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('lightbox'))closeLightbox();});
 document.addEventListener('keydown',e=>{if(!document.getElementById('lightbox').classList.contains('open'))return;if(e.key==='Escape')closeLightbox();if(e.key==='ArrowLeft')lbNav(-1);if(e.key==='ArrowRight')lbNav(1);});
 
-/* =============================================
-   📥 DOWNLOAD — ライトボックスと同じポラロイドを画像化
-============================================= */
+/* DOWNLOAD */
 function downloadPolaroid(photoIdx){
   const item=photoList[photoIdx],isDemo=!item||item.file==='__demo__',comment=getComment(photoIdx);
   const PW=380,PAD=14,BOT=70,imgH=Math.round((PW-PAD*2)*(4/3)),PH=PAD+imgH+BOT;
@@ -703,9 +699,7 @@ function launchConfetti(n=80){
   for(let i=0;i<n;i++){const el=document.createElement('div');el.className='confetti-piece';const sz=6+Math.random()*9;el.style.cssText=`left:${Math.random()*100}vw;width:${sz}px;height:${sz}px;background:${colors[~~(Math.random()*colors.length)]};border-radius:${Math.random()<.6?'50%':'2px'};animation-duration:${2.4+Math.random()*2}s;animation-delay:${Math.random()*.7}s;`;document.body.appendChild(el);el.addEventListener('animationend',()=>el.remove());}
 }
 
-/* =============================================
-   🎁 PRESENT BOX
-============================================= */
+/* PRESENT BOX */
 let presentBgRaf=null;
 function startPresentBg(){
   const canvas=document.getElementById('present-bg-canvas'),cx=canvas.getContext('2d');
@@ -805,7 +799,6 @@ document.getElementById('btn-reset-all').addEventListener('click',()=>{if(!confi
 document.getElementById('btn-unlock-all').addEventListener('click',()=>{setPulled(photoList.map((_,i)=>i));renderCollection();updateAdminStatus();toast('🔓 全写真を解放しました 🎉');});
 document.getElementById('btn-reset-presents').addEventListener('click',()=>{if(!confirm('プレゼントの開封記録をリセットしますか？'))return;localStorage.removeItem(K_OPENED);renderPresentGrid();updateAdminStatus();toast('🔄 プレゼント記録をリセットしました');});
 
-// プレゼントテスト用セレクト更新
 function updatePresentTestSelect(){
   const sel=document.getElementById('present-test-select');
   sel.innerHTML='';
